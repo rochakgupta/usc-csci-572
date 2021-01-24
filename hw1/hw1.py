@@ -11,30 +11,30 @@ from bs4 import BeautifulSoup
 INPUT_DIR = "input"
 OUTPUT_DIR = "output"
 
-GOOGLE_RESULT_JSON = f"{INPUT_DIR}/Google_Result3.json"
-ASK_RESULT_JSON = f"{OUTPUT_DIR}/hw1.json"
+GOOGLE_RESULTS_JSON = f"{INPUT_DIR}/Google_Result3.json"
+ASK_RESULTS_JSON = f"{OUTPUT_DIR}/hw1.json"
 
 
 class GoogleManager:
     def __init__(self):
-        self.__result = None
+        self.__results = None
 
-    def parse_result(self, json_file_path):
-        logging.debug(f"Parsing Google results from {json_file_path}")
+    def load_results(self, json_file_path):
+        logging.debug(f"Loading Google results from {json_file_path}")
         with open(json_file_path, "r") as f:
-            self.__result = json.load(f, object_pairs_hook=OrderedDict)  # noqa
+            self.__results = json.load(f, object_pairs_hook=OrderedDict)  # noqa
 
-    def dump_result(self, dump_file_path):
+    def dump_results(self, dump_file_path):
         logging.debug(f"Dumping Google Results into {dump_file_path}")
         with open(dump_file_path, "w") as f:
-            f.write(json.dumps(self.__result, indent=2))
+            f.write(json.dumps(self.__results, indent=2))
 
-    def get_result(self):
-        return self.__result
+    def get_results(self):
+        return self.__results
 
 
 class Ask:
-    __RESULT_LIMIT = 10
+    __MAX_RESULTS = 10
     # @formatter:off
     __USER_AGENT = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36'} # noqa
     # @formatter:on
@@ -64,55 +64,55 @@ class Ask:
 
     @staticmethod
     def search(query, sleep=True):
-        result = []
+        results = []
         page = 1
         while True:
             if sleep:
                 Ask.__sleep()
             html = Ask.__fetch_html(query, page)
-            page_result = Ask.__scrape(html)
-            if len(page_result) == 0:
+            page_results = Ask.__scrape(html)
+            if len(page_results) == 0:
                 break
-            result += page_result
-            if len(result) >= Ask.__RESULT_LIMIT:
-                result = result[:Ask.__RESULT_LIMIT]
+            results += page_results
+            if len(results) >= Ask.__MAX_RESULTS:
+                results = results[:Ask.__MAX_RESULTS]
                 break
             page += 1
-        return result
+        return results
 
 
 class AskManager:
-    def __init__(self, google_result):
-        self.__google_result = google_result
-        self.__result = None
+    def __init__(self, google_results):
+        self.__google_results = google_results
+        self.__results = None
 
-    def parse_result(self, json_file_path):
-        logging.debug(f"Parsing Ask results from {json_file_path}")
+    def load_results(self, json_file_path):
+        logging.debug(f"Loading Ask results from {json_file_path}")
         with open(json_file_path, "r") as f:
-            self.__result = json.load(f, object_pairs_hook=OrderedDict)  # noqa
+            self.__results = json.load(f, object_pairs_hook=OrderedDict)  # noqa
 
-    def fetch_result(self, sleep=True):
+    def fetch_results(self, sleep=True):
         logging.debug("Fetching Ask results")
-        self.__result = OrderedDict()
+        self.__results = OrderedDict()
         query_num = 1
-        num_queries = len(self.__google_result)
-        for query, _ in self.__google_result.items():
+        num_queries = len(self.__google_results)
+        for query, _ in self.__google_results.items():
             logging.debug(f"Fetching results for query {query_num}/{num_queries}: {query}")
-            query_result = Ask.search(query, sleep)
-            self.__result[query] = query_result
+            query_results = Ask.search(query, sleep)
+            self.__results[query] = query_results
             query_num += 1
 
-    def dump_result(self, dump_file_path):
+    def dump_results(self, dump_file_path):
         logging.debug(f"Dumping Ask Results into {dump_file_path}")
         with open(dump_file_path, "w") as f:
-            f.write(json.dumps(self.__result, indent=2))
+            f.write(json.dumps(self.__results, indent=2))
 
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     pp = pprint.PrettyPrinter(indent=2)
     google_manager = GoogleManager()
-    google_manager.parse_result(GOOGLE_RESULT_JSON)
-    ask_manager = AskManager(google_manager.get_result())
-    ask_manager.fetch_result(sleep=True)
-    ask_manager.dump_result(ASK_RESULT_JSON)
+    google_manager.load_results(GOOGLE_RESULTS_JSON)
+    ask_manager = AskManager(google_manager.get_results())
+    ask_manager.fetch_results(sleep=True)
+    ask_manager.dump_results(ASK_RESULTS_JSON)
