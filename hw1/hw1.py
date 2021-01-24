@@ -7,13 +7,6 @@ from random import randint
 import requests
 from bs4 import BeautifulSoup
 
-INPUT_DIR = "input"
-OUTPUT_DIR = "output"
-
-GOOGLE_RESULTS_JSON = f"{INPUT_DIR}/Google_Result3.json"
-ASK_RESULTS_JSON = f"{OUTPUT_DIR}/hw1_unique.json"
-STATISTICS_CSV = f"{OUTPUT_DIR}/hw1.csv"
-
 
 class Logger:
     @staticmethod
@@ -23,24 +16,6 @@ class Logger:
     @staticmethod
     def info(message):
         logging.info(message)
-
-
-class GoogleManager:
-    def __init__(self):
-        self.__results = OrderedDict()
-
-    def load_results(self, json_file_path):
-        Logger.info(f"Loading Google results from {json_file_path}")
-        with open(json_file_path, "r") as f:
-            self.__results = json.load(f, object_pairs_hook=OrderedDict)  # noqa
-
-    def dump_results(self, dump_file_path):
-        Logger.info(f"Dumping Google Results into {dump_file_path}")
-        with open(dump_file_path, "w") as f:
-            f.write(json.dumps(self.__results, indent=2))
-
-    def get_results(self):
-        return self.__results
 
 
 def are_results_similar(first_result, second_result):
@@ -59,23 +34,23 @@ def are_results_similar(first_result, second_result):
 
 
 class Ask:
-    __MAX_RESULTS = 10
+    _MAX_RESULTS = 10
     # @formatter:off
-    __USER_AGENT = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36'} # noqa
+    _USER_AGENT = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36'} # noqa
     # @formatter:on
 
     @staticmethod
-    def __build_url(query, page):
+    def _build_url(query, page):
         return f"https://www.ask.com/web?q={query.replace(' ', '+')}&page={page}"
 
     @staticmethod
-    def __fetch_html(query, page):
-        url = Ask.__build_url(query, page)
+    def _fetch_html(query, page):
+        url = Ask._build_url(query, page)
         Logger.info(f"Fetching page {page}: {url}")
-        return requests.get(url, headers=Ask.__USER_AGENT).text
+        return requests.get(url, headers=Ask._USER_AGENT).text
 
     @staticmethod
-    def __scrape(html):
+    def _scrape(html):
         soup = BeautifulSoup(html, "html.parser")
         anchor_tags = soup.find_all("a", attrs={
             "class": "PartialSearchResults-item-title-link result-link"
@@ -83,12 +58,12 @@ class Ask:
         return [anchor_tag.get('href') for anchor_tag in anchor_tags]
 
     @staticmethod
-    def __sleep():
+    def _sleep():
         seconds = randint(5, 10)
         time.sleep(seconds)
 
     @staticmethod
-    def __find_unique_results(results):
+    def _find_unique_results(results):
         num_results = len(results)
         unique_results = []
         duplicates_indices = set()
@@ -103,156 +78,181 @@ class Ask:
         return unique_results
 
     @staticmethod
-    def search(query, sleep=True):
+    def search(query, sleep):
         results = []
         page = 1
         while True:
             if sleep:
-                Ask.__sleep()
-            html = Ask.__fetch_html(query, page)
-            page_results = Ask.__scrape(html)
+                Ask._sleep()
+            html = Ask._fetch_html(query, page)
+            page_results = Ask._scrape(html)
             if len(page_results) == 0:
                 break
             results += page_results
-            results = Ask.__find_unique_results(results)
-            if len(results) >= Ask.__MAX_RESULTS:
-                results = results[:Ask.__MAX_RESULTS]
+            results = Ask._find_unique_results(results)
+            if len(results) >= Ask._MAX_RESULTS:
+                results = results[:Ask._MAX_RESULTS]
                 break
             page += 1
         return results
 
 
-class AskManager:
-    def __init__(self):
-        self.__results = OrderedDict()
+class Task:
+    _INPUT_DIR = "input"
+    _OUTPUT_DIR = "output"
 
-    def load_results(self, json_file_path):
-        Logger.info(f"Loading Ask results from {json_file_path}")
-        with open(json_file_path, "r") as f:
-            self.__results = json.load(f, object_pairs_hook=OrderedDict)  # noqa
+    _GOOGLE_RESULTS_FILE = "Google_Result3.json"
+    _ASK_RESULTS_FILE = "hw1_2.json"
+    _STATISTICS_FILE = "hw1_2.csv"
 
-    def fetch_results(self, queries, sleep=True):
-        Logger.info("Fetching Ask results")
-        self.__results = OrderedDict()
+    _NUM_OVERLAPPING_RESULTS_KEY = "num_overlapping_results"
+    _SPEARMAN_CORRELATION_KEY = "spearman_correlation"
+
+    def __init__(self, scrape=True, sleep=True):
+        Logger.init()
+        self._scrape = scrape
+        self._sleep = sleep if scrape else None
+        self._queries_statistics = OrderedDict()
+        self._average_statistics = {}
+
+    @staticmethod
+    def _get_input_file_path(file_name):
+        return f"{Task._INPUT_DIR}/{file_name}"
+
+    @staticmethod
+    def _get_output_file_path(file_name):
+        return f"{Task._OUTPUT_DIR}/{file_name}"
+
+    @staticmethod
+    def _load_results(file_path):
+        with open(file_path, "r") as f:
+            return json.load(f, object_pairs_hook=OrderedDict)  # noqa
+
+    @staticmethod
+    def _dump_results(results, file_path):
+        with open(file_path, "w") as f:
+            f.write(json.dumps(results, indent=2))
+
+    @staticmethod
+    def _get_google_results():
+        google_results_file_path = Task._get_input_file_path(Task._GOOGLE_RESULTS_FILE)
+        Logger.info(f"Loading Google results from {google_results_file_path}")
+        return Task._load_results(google_results_file_path)
+
+    @staticmethod
+    def _fetch_ask_results(queries, sleep):
+        results = OrderedDict()
         query_num = 1
         num_queries = len(queries)
         for query in queries:
             Logger.info(f"Fetching results for query {query_num}/{num_queries}: {query}")
             query_results = Ask.search(query, sleep)
-            self.__results[query] = query_results
+            results[query] = query_results
             query_num += 1
+        return results
 
-    def dump_results(self, dump_file_path):
-        Logger.info(f"Dumping Ask Results into {dump_file_path}")
-        with open(dump_file_path, "w") as f:
-            f.write(json.dumps(self.__results, indent=2))
+    @staticmethod
+    def _get_ask_results(queries, scrape, sleep):
+        ask_results_file_path = Task._get_output_file_path(Task._ASK_RESULTS_FILE)
+        if scrape:
+            Logger.info("Fetching Ask results")
+            results = Task._fetch_ask_results(queries, sleep)
+            Logger.info(f"Dumping Ask results into {ask_results_file_path}")
+            Task._dump_results(results, ask_results_file_path)
+            return results
+        else:
+            Logger.info(f"Loading Ask results from {ask_results_file_path}")
+            return Task._load_results(ask_results_file_path)
 
-    def get_results(self):
-        return self.__results
-
-
-class ResultsComparator:
-    __NUM_OVERLAPPING_MATCHES = "num_overlapping_matches"
-    __SPEARMAN_CORRELATION = "spearman_correlation"
-
-    def __init__(self, queries, google_results, ask_results):
-        self.__queries = queries
-        self.__google_results = google_results
-        self.__ask_results = ask_results
-        self.__queries_statistics = OrderedDict()
-        self.__average_statistics = {}
-
-    def __find_matches(self):
-        matches = OrderedDict()
-        for query in self.__queries:
-            matches[query] = []
-            query_google_results = self.__google_results[query]
-            query_ask_results = self.__ask_results[query]
-            matched_indices = set()
+    @staticmethod
+    def _find_overlapping_results(google_results, ask_results):
+        overlapping_results = OrderedDict()
+        for query in google_results.keys():
+            overlapping_results[query] = []
+            query_google_results = google_results[query]
+            query_ask_results = ask_results[query]
+            overlapping_ask_results_indices = set()
             for i in range(0, len(query_google_results)):
                 query_google_result = query_google_results[i]
                 for j in range(0, len(query_ask_results)):
                     query_ask_result = query_ask_results[j]
-                    if j not in matched_indices and are_results_similar(query_google_result, query_ask_result):
-                        matched_indices.add(j)
-                        matches[query].append((i, j))
+                    if j not in overlapping_ask_results_indices and are_results_similar(query_google_result,
+                                                                                        query_ask_result):
+                        overlapping_ask_results_indices.add(j)
+                        overlapping_results[query].append((i, j))
                         break
-        return matches
+        return overlapping_results
 
     @staticmethod
-    def __calculate_spearman_correlation(query_matches):
-        num_matches = len(query_matches)
-        if num_matches == 0:
+    def _calculate_spearman_correlation(query_overlapping_results):
+        num_query_overlapping_results = len(query_overlapping_results)
+        if num_query_overlapping_results == 0:
             return 0
-        elif num_matches == 1:
-            google_rank, ask_rank = query_matches[0]
+        elif num_query_overlapping_results == 1:
+            google_rank, ask_rank = query_overlapping_results[0]
             if google_rank != ask_rank:
                 return 0
             else:
                 return 1
         else:
-            sum_of_squared_rank_differences = 0
-            for google_rank, ask_rank in query_matches:
-                sum_of_squared_rank_differences += (google_rank - ask_rank) ** 2
-            return 1 - ((6 * sum_of_squared_rank_differences) / (num_matches * ((num_matches ** 2) - 1)))
+            rank_differences_squared_sum = 0
+            for google_rank, ask_rank in query_overlapping_results:
+                rank_differences_squared_sum += (google_rank - ask_rank) ** 2
+            return 1 - ((6 * rank_differences_squared_sum) / (
+                    num_query_overlapping_results * ((num_query_overlapping_results ** 2) - 1)))
 
-    def __calculate_queries_statistics(self, matches):
-        for query, query_matches in matches.items():
-            self.__queries_statistics[query] = {
-                ResultsComparator.__NUM_OVERLAPPING_MATCHES: len(query_matches),
-                ResultsComparator.__SPEARMAN_CORRELATION: ResultsComparator.__calculate_spearman_correlation(
-                    query_matches)
+    def _calculate_queries_statistics(self, overlapping_results):
+        for query, query_overlapping_results in overlapping_results.items():
+            self._queries_statistics[query] = {
+                Task._NUM_OVERLAPPING_RESULTS_KEY: len(query_overlapping_results),
+                Task._SPEARMAN_CORRELATION_KEY: Task._calculate_spearman_correlation(
+                    query_overlapping_results)
             }
 
-    def __calculate_average_statistics(self):
+    def _calculate_average_statistics(self):
         def calculate_average_statistic_for(key):
             statistic_sum = 0
-            for query, query_statistics in self.__queries_statistics.items():
+            for query, query_statistics in self._queries_statistics.items():
                 statistic_sum += query_statistics[key]
-            self.__average_statistics[key] = statistic_sum / len(self.__queries_statistics)
+            self._average_statistics[key] = statistic_sum / len(self._queries_statistics)
 
-        calculate_average_statistic_for(ResultsComparator.__NUM_OVERLAPPING_MATCHES)
-        calculate_average_statistic_for(ResultsComparator.__SPEARMAN_CORRELATION)
+        calculate_average_statistic_for(Task._NUM_OVERLAPPING_RESULTS_KEY)
+        calculate_average_statistic_for(Task._SPEARMAN_CORRELATION_KEY)
 
-    def compare(self):
-        matches = self.__find_matches()
-        self.__calculate_queries_statistics(matches)
-        self.__calculate_average_statistics()
+    def _evaluate_ask_results(self, google_results, ask_results):
+        overlapping_results = Task._find_overlapping_results(google_results, ask_results)
+        self._calculate_queries_statistics(overlapping_results)
+        self._calculate_average_statistics()
 
-    def dump_results(self, dump_file_path):
-        Logger.info(f"Dumping Statistics into {dump_file_path}")
+    def run(self):
+        google_results = Task._get_google_results()
+        ask_results = Task._get_ask_results(google_results.keys(), self._scrape, self._sleep)
+        self._evaluate_ask_results(google_results, ask_results)
+
+    def write_statistics(self):
+        statistics_file_path = Task._get_output_file_path(Task._STATISTICS_FILE)
+        Logger.info(f"Writing statistics into {statistics_file_path}")
 
         def write_query_statistics(f, query_num, query_statistics):
-            num_overlapping_results = query_statistics[ResultsComparator.__NUM_OVERLAPPING_MATCHES]
+            num_overlapping_results = query_statistics[Task._NUM_OVERLAPPING_RESULTS_KEY]
             percent_overlap = round(num_overlapping_results * 10.0, 2)
-            spearman_correlation = round(query_statistics[ResultsComparator.__SPEARMAN_CORRELATION], 2)
+            spearman_correlation = round(query_statistics[Task._SPEARMAN_CORRELATION_KEY], 2)
             f.write(f"Query {query_num}, {num_overlapping_results}, {percent_overlap}, {spearman_correlation}\n")
 
         def write_average_statistics(f):
-            num_overlapping_results = round(self.__average_statistics[ResultsComparator.__NUM_OVERLAPPING_MATCHES], 2)
+            num_overlapping_results = round(self._average_statistics[Task._NUM_OVERLAPPING_RESULTS_KEY], 2)
             percent_overlap = round(num_overlapping_results * 10.0, 2)
-            spearman_correlation = round(self.__average_statistics[ResultsComparator.__SPEARMAN_CORRELATION], 2)
+            spearman_correlation = round(self._average_statistics[Task._SPEARMAN_CORRELATION_KEY], 2)
             f.write(f"Averages, {num_overlapping_results}, {percent_overlap}, {spearman_correlation}\n")
 
-        with open(dump_file_path, "w") as f:
+        with open(statistics_file_path, "w") as f:
             f.write("Queries, Number of Overlapping Results, Percent Overlap, Spearman Correlation\n")
-            for index, (_, query_statistics) in enumerate(self.__queries_statistics.items()):
+            for index, query_statistics in enumerate(self._queries_statistics.values()):
                 write_query_statistics(f, index + 1, query_statistics)
             write_average_statistics(f)
 
 
 if __name__ == "__main__":
-    Logger.init()
-
-    google_manager = GoogleManager()
-    google_manager.load_results(GOOGLE_RESULTS_JSON)
-    google_results = google_manager.get_results()
-    queries = google_results.keys()
-
-    ask_manager = AskManager()
-    ask_manager.load_results(ASK_RESULTS_JSON)
-    ask_results = ask_manager.get_results()
-
-    results_comparator = ResultsComparator(queries, google_results, ask_results)
-    results_comparator.compare()
-    results_comparator.dump_results(STATISTICS_CSV)
+    task = Task()
+    task.run()
+    task.write_statistics()
