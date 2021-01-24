@@ -102,16 +102,12 @@ class Task:
     _OUTPUT_DIR = "output"
 
     _GOOGLE_RESULTS_FILE = "Google_Result3.json"
-    _ASK_RESULTS_FILE = "hw1.json"
-    _STATISTICS_FILE = "hw1.csv"
 
     _NUM_OVERLAPPING_RESULTS_KEY = "num_overlapping_results"
     _SPEARMAN_CORRELATION_KEY = "spearman_correlation"
 
-    def __init__(self, scrape=True, sleep=True):
+    def __init__(self):
         Logger.init()
-        self._scrape = scrape
-        self._sleep = sleep if scrape else None
         self._queries_statistics = OrderedDict()
         self._average_statistics = {}
 
@@ -134,8 +130,8 @@ class Task:
             f.write(json.dumps(results, indent=2))
 
     @staticmethod
-    def _get_google_results():
-        google_results_file_path = Task._get_input_file_path(Task._GOOGLE_RESULTS_FILE)
+    def _get_google_results(google_results_file):
+        google_results_file_path = Task._get_input_file_path(google_results_file)
         Logger.info(f"Loading Google results from {google_results_file_path}")
         return Task._load_results(google_results_file_path)
 
@@ -152,8 +148,8 @@ class Task:
         return results
 
     @staticmethod
-    def _get_ask_results(queries, scrape, sleep):
-        ask_results_file_path = Task._get_output_file_path(Task._ASK_RESULTS_FILE)
+    def _get_ask_results(ask_results_file, queries, scrape, sleep):
+        ask_results_file_path = Task._get_output_file_path(ask_results_file)
         if scrape:
             Logger.info("Fetching Ask results")
             results = Task._fetch_ask_results(queries, sleep)
@@ -171,14 +167,14 @@ class Task:
             overlapping_results[query] = []
             query_google_results = google_results[query]
             query_ask_results = ask_results[query]
-            overlapping_ask_results_indices = set()
+            overlapping_query_ask_results_indices = set()
             for i in range(0, len(query_google_results)):
                 query_google_result = query_google_results[i]
                 for j in range(0, len(query_ask_results)):
                     query_ask_result = query_ask_results[j]
-                    if j not in overlapping_ask_results_indices and are_results_similar(query_google_result,
-                                                                                        query_ask_result):
-                        overlapping_ask_results_indices.add(j)
+                    if j not in overlapping_query_ask_results_indices and are_results_similar(query_google_result,
+                                                                                              query_ask_result):
+                        overlapping_query_ask_results_indices.add(j)
                         overlapping_results[query].append((i, j))
                         break
         return overlapping_results
@@ -219,18 +215,18 @@ class Task:
         calculate_average_statistic_for(Task._NUM_OVERLAPPING_RESULTS_KEY)
         calculate_average_statistic_for(Task._SPEARMAN_CORRELATION_KEY)
 
-    def _evaluate_ask_results(self, google_results, ask_results):
+    def _compare_results(self, google_results, ask_results):
         overlapping_results = Task._find_overlapping_results(google_results, ask_results)
         self._calculate_queries_statistics(overlapping_results)
         self._calculate_average_statistics()
 
-    def run(self):
-        google_results = Task._get_google_results()
-        ask_results = Task._get_ask_results(google_results.keys(), self._scrape, self._sleep)
-        self._evaluate_ask_results(google_results, ask_results)
+    def run(self, google_results_file, ask_results_file, scrape=True, sleep=True):
+        google_results = Task._get_google_results(google_results_file)
+        ask_results = Task._get_ask_results(ask_results_file, google_results.keys(), scrape, sleep if scrape else None)
+        self._compare_results(google_results, ask_results)
 
-    def write_statistics(self):
-        statistics_file_path = Task._get_output_file_path(Task._STATISTICS_FILE)
+    def write_statistics(self, statistics_file):
+        statistics_file_path = Task._get_output_file_path(statistics_file)
         Logger.info(f"Writing statistics into {statistics_file_path}")
 
         def write_query_statistics(f, query_num, query_statistics):
@@ -254,5 +250,5 @@ class Task:
 
 if __name__ == "__main__":
     task = Task()
-    task.run()
-    task.write_statistics()
+    task.run(google_results_file="Google_result3.json", ask_results_file="hw1.json")
+    task.write_statistics(statistics_file="hw1.csv")
