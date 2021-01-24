@@ -12,7 +12,7 @@ INPUT_DIR = "input"
 OUTPUT_DIR = "output"
 
 GOOGLE_RESULTS_JSON = f"{INPUT_DIR}/Google_Result3.json"
-ASK_RESULTS_JSON = f"{OUTPUT_DIR}/hw1.json"
+ASK_RESULTS_JSON = f"{OUTPUT_DIR}/hw1_unique.json"
 
 
 class GoogleManager:
@@ -20,12 +20,12 @@ class GoogleManager:
         self.__results = None
 
     def load_results(self, json_file_path):
-        logging.debug(f"Loading Google results from {json_file_path}")
+        logging.info(f"Loading Google results from {json_file_path}")
         with open(json_file_path, "r") as f:
             self.__results = json.load(f, object_pairs_hook=OrderedDict)  # noqa
 
     def dump_results(self, dump_file_path):
-        logging.debug(f"Dumping Google Results into {dump_file_path}")
+        logging.info(f"Dumping Google Results into {dump_file_path}")
         with open(dump_file_path, "w") as f:
             f.write(json.dumps(self.__results, indent=2))
 
@@ -46,7 +46,7 @@ class Ask:
     @staticmethod
     def __fetch_html(query, page):
         url = Ask.__build_url(query, page)
-        logging.debug(f"Fetching page {page}: {url}")
+        logging.info(f"Fetching page {page}: {url}")
         return requests.get(url, headers=Ask.__USER_AGENT).text
 
     @staticmethod
@@ -59,8 +59,37 @@ class Ask:
 
     @staticmethod
     def __sleep():
-        seconds = randint(10, 25)
+        seconds = randint(5, 10)
         time.sleep(seconds)
+
+    @staticmethod
+    def __are_results_similar(first_result, second_result):
+        def get_canonical_result(result):
+            if result.startswith("http://"):
+                result = result[7:]
+            elif result.startswith("https://"):
+                result = result[8:]
+            if result.startswith("www."):
+                result = result[4:]
+            if result.endswith("/"):
+                result = result[:-1]
+            return result
+        return get_canonical_result(first_result) == get_canonical_result(second_result)
+
+    @staticmethod
+    def __find_unique_results(results):
+        num_results = len(results)
+        unique_results = []
+        duplicates_indices = set()
+        for i in range(0, num_results):
+            if i not in duplicates_indices:
+                first_result = results[i]
+                unique_results.append(first_result)
+                for j in range(i + 1, num_results):
+                    second_result = results[j]
+                    if Ask.__are_results_similar(first_result, second_result):
+                        duplicates_indices.add(j)
+        return unique_results
 
     @staticmethod
     def search(query, sleep=True):
@@ -74,6 +103,7 @@ class Ask:
             if len(page_results) == 0:
                 break
             results += page_results
+            results = Ask.__find_unique_results(results)
             if len(results) >= Ask.__MAX_RESULTS:
                 results = results[:Ask.__MAX_RESULTS]
                 break
@@ -87,29 +117,29 @@ class AskManager:
         self.__results = None
 
     def load_results(self, json_file_path):
-        logging.debug(f"Loading Ask results from {json_file_path}")
+        logging.info(f"Loading Ask results from {json_file_path}")
         with open(json_file_path, "r") as f:
             self.__results = json.load(f, object_pairs_hook=OrderedDict)  # noqa
 
     def fetch_results(self, sleep=True):
-        logging.debug("Fetching Ask results")
+        logging.info("Fetching Ask results")
         self.__results = OrderedDict()
         query_num = 1
         num_queries = len(self.__google_results)
         for query, _ in self.__google_results.items():
-            logging.debug(f"Fetching results for query {query_num}/{num_queries}: {query}")
+            logging.info(f"Fetching results for query {query_num}/{num_queries}: {query}")
             query_results = Ask.search(query, sleep)
             self.__results[query] = query_results
             query_num += 1
 
     def dump_results(self, dump_file_path):
-        logging.debug(f"Dumping Ask Results into {dump_file_path}")
+        logging.info(f"Dumping Ask Results into {dump_file_path}")
         with open(dump_file_path, "w") as f:
             f.write(json.dumps(self.__results, indent=2))
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     pp = pprint.PrettyPrinter(indent=2)
     google_manager = GoogleManager()
     google_manager.load_results(GOOGLE_RESULTS_JSON)
