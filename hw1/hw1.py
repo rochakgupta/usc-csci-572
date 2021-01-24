@@ -1,6 +1,5 @@
 import json
 import logging
-import pprint
 import time
 from collections import OrderedDict
 from random import randint
@@ -15,19 +14,32 @@ GOOGLE_RESULTS_JSON = f"{INPUT_DIR}/Google_Result3.json"
 ASK_RESULTS_JSON = f"{OUTPUT_DIR}/hw1_unique.json"
 
 
+class Logger:
+    @staticmethod
+    def init():
+        logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+
+    @staticmethod
+    def info(message):
+        logging.info(message)
+
+
 class GoogleManager:
     def __init__(self):
         self.__results = None
 
     def load_results(self, json_file_path):
-        logging.info(f"Loading Google results from {json_file_path}")
+        Logger.info(f"Loading Google results from {json_file_path}")
         with open(json_file_path, "r") as f:
             self.__results = json.load(f, object_pairs_hook=OrderedDict)  # noqa
 
     def dump_results(self, dump_file_path):
-        logging.info(f"Dumping Google Results into {dump_file_path}")
+        Logger.info(f"Dumping Google Results into {dump_file_path}")
         with open(dump_file_path, "w") as f:
             f.write(json.dumps(self.__results, indent=2))
+
+    def get_queries(self):
+        return self.__results.keys()
 
     def get_results(self):
         return self.__results
@@ -46,7 +58,7 @@ class Ask:
     @staticmethod
     def __fetch_html(query, page):
         url = Ask.__build_url(query, page)
-        logging.info(f"Fetching page {page}: {url}")
+        Logger.info(f"Fetching page {page}: {url}")
         return requests.get(url, headers=Ask.__USER_AGENT).text
 
     @staticmethod
@@ -112,37 +124,35 @@ class Ask:
 
 
 class AskManager:
-    def __init__(self, google_results):
-        self.__google_results = google_results
+    def __init__(self):
         self.__results = None
 
     def load_results(self, json_file_path):
-        logging.info(f"Loading Ask results from {json_file_path}")
+        Logger.info(f"Loading Ask results from {json_file_path}")
         with open(json_file_path, "r") as f:
             self.__results = json.load(f, object_pairs_hook=OrderedDict)  # noqa
 
-    def fetch_results(self, sleep=True):
-        logging.info("Fetching Ask results")
+    def fetch_results(self, queries, sleep=True):
+        Logger.info("Fetching Ask results")
         self.__results = OrderedDict()
         query_num = 1
-        num_queries = len(self.__google_results)
-        for query, _ in self.__google_results.items():
-            logging.info(f"Fetching results for query {query_num}/{num_queries}: {query}")
+        num_queries = len(queries)
+        for query in queries:
+            Logger.info(f"Fetching results for query {query_num}/{num_queries}: {query}")
             query_results = Ask.search(query, sleep)
             self.__results[query] = query_results
             query_num += 1
 
     def dump_results(self, dump_file_path):
-        logging.info(f"Dumping Ask Results into {dump_file_path}")
+        Logger.info(f"Dumping Ask Results into {dump_file_path}")
         with open(dump_file_path, "w") as f:
             f.write(json.dumps(self.__results, indent=2))
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    pp = pprint.PrettyPrinter(indent=2)
+    Logger.init()
     google_manager = GoogleManager()
     google_manager.load_results(GOOGLE_RESULTS_JSON)
-    ask_manager = AskManager(google_manager.get_results())
-    ask_manager.fetch_results(sleep=True)
+    ask_manager = AskManager()
+    ask_manager.fetch_results(google_manager.get_queries(), sleep=True)
     ask_manager.dump_results(ASK_RESULTS_JSON)
