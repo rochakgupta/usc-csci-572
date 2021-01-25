@@ -101,8 +101,6 @@ class Task:
     _INPUT_DIR = "input"
     _OUTPUT_DIR = "output"
 
-    _GOOGLE_RESULTS_FILE = "Google_Result3.json"
-
     _NUM_OVERLAPPING_RESULTS_KEY = "num_overlapping_results"
     _SPEARMAN_CORRELATION_KEY = "spearman_correlation"
 
