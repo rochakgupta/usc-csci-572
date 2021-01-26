@@ -1,0 +1,10 @@
+Search Engine Under Evaluation: Ask
+
+Average Percent Overlap: 31.1
+
+Average Spearman Coefficient: -2.57
+
+The statistics show that Ask's results did not fair well in comparison to Google's results. If you look at the
+individual statistics of queries, you will see that their Spearman Coefficient is remarkably low even for those
+whose results overlapped a lot. This means that Ask is not able to find similar results as Google and even when
+it does, their ranking is extremely polarising.

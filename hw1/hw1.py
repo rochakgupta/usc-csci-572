@@ -102,7 +102,7 @@ class Task:
     _OUTPUT_DIR = "output"
 
     _NUM_OVERLAPPING_RESULTS_KEY = "num_overlapping_results"
-    _SPEARMAN_CORRELATION_KEY = "spearman_correlation"
+    _SPEARMAN_COEFFICIENT_KEY = "spearman_coefficient"
 
     def __init__(self):
         Logger.init()
@@ -178,7 +178,7 @@ class Task:
         return overlapping_results
 
     @staticmethod
-    def _calculate_spearman_correlation(query_overlapping_results):
+    def _calculate_spearman_coefficient(query_overlapping_results):
         num_query_overlapping_results = len(query_overlapping_results)
         if num_query_overlapping_results == 0:
             return 0
@@ -199,7 +199,7 @@ class Task:
         for query, query_overlapping_results in overlapping_results.items():
             self._queries_statistics[query] = {
                 Task._NUM_OVERLAPPING_RESULTS_KEY: len(query_overlapping_results),
-                Task._SPEARMAN_CORRELATION_KEY: Task._calculate_spearman_correlation(
+                Task._SPEARMAN_COEFFICIENT_KEY: Task._calculate_spearman_coefficient(
                     query_overlapping_results)
             }
 
@@ -211,7 +211,7 @@ class Task:
             self._average_statistics[key] = statistic_sum / len(self._queries_statistics)
 
         calculate_average_statistic_for(Task._NUM_OVERLAPPING_RESULTS_KEY)
-        calculate_average_statistic_for(Task._SPEARMAN_CORRELATION_KEY)
+        calculate_average_statistic_for(Task._SPEARMAN_COEFFICIENT_KEY)
 
     def _compare_results(self, google_results, ask_results):
         overlapping_results = Task._find_overlapping_results(google_results, ask_results)
@@ -230,17 +230,17 @@ class Task:
         def write_query_statistics(f, query_num, query_statistics):
             num_overlapping_results = query_statistics[Task._NUM_OVERLAPPING_RESULTS_KEY]
             percent_overlap = round(num_overlapping_results * 10.0, 2)
-            spearman_correlation = round(query_statistics[Task._SPEARMAN_CORRELATION_KEY], 2)
-            f.write(f"Query {query_num}, {num_overlapping_results}, {percent_overlap}, {spearman_correlation}\n")
+            spearman_coefficient = round(query_statistics[Task._SPEARMAN_COEFFICIENT_KEY], 2)
+            f.write(f"Query {query_num}, {num_overlapping_results}, {percent_overlap}, {spearman_coefficient}\n")
 
         def write_average_statistics(f):
             num_overlapping_results = round(self._average_statistics[Task._NUM_OVERLAPPING_RESULTS_KEY], 2)
             percent_overlap = round(num_overlapping_results * 10.0, 2)
-            spearman_correlation = round(self._average_statistics[Task._SPEARMAN_CORRELATION_KEY], 2)
-            f.write(f"Averages, {num_overlapping_results}, {percent_overlap}, {spearman_correlation}\n")
+            spearman_coefficient = round(self._average_statistics[Task._SPEARMAN_COEFFICIENT_KEY], 2)
+            f.write(f"Averages, {num_overlapping_results}, {percent_overlap}, {spearman_coefficient}\n")
 
         with open(statistics_file_path, "w") as f:
-            f.write("Queries, Number of Overlapping Results, Percent Overlap, Spearman Correlation\n")
+            f.write("Queries, Number of Overlapping Results, Percent Overlap, Spearman Coefficient\n")
             for index, query_statistics in enumerate(self._queries_statistics.values()):
                 write_query_statistics(f, index + 1, query_statistics)
             write_average_statistics(f)
