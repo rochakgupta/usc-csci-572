@@ -229,14 +229,14 @@ class Task:
 
         def write_query_statistics(f, query_num, query_statistics):
             num_overlapping_results = query_statistics[Task._NUM_OVERLAPPING_RESULTS_KEY]
-            percent_overlap = round(num_overlapping_results * 10.0, 2)
-            spearman_coefficient = round(query_statistics[Task._SPEARMAN_COEFFICIENT_KEY], 2)
+            percent_overlap = num_overlapping_results * 10.0
+            spearman_coefficient = query_statistics[Task._SPEARMAN_COEFFICIENT_KEY]
             f.write(f"Query {query_num}, {num_overlapping_results}, {percent_overlap}, {spearman_coefficient}\n")
 
         def write_average_statistics(f):
-            num_overlapping_results = round(self._average_statistics[Task._NUM_OVERLAPPING_RESULTS_KEY], 2)
-            percent_overlap = round(num_overlapping_results * 10.0, 2)
-            spearman_coefficient = round(self._average_statistics[Task._SPEARMAN_COEFFICIENT_KEY], 2)
+            num_overlapping_results = self._average_statistics[Task._NUM_OVERLAPPING_RESULTS_KEY]
+            percent_overlap = num_overlapping_results * 10.0
+            spearman_coefficient = self._average_statistics[Task._SPEARMAN_COEFFICIENT_KEY]
             f.write(f"Averages, {num_overlapping_results}, {percent_overlap}, {spearman_coefficient}\n")
 
         with open(statistics_file_path, "w") as f:
@@ -248,5 +248,5 @@ class Task:
 
 if __name__ == "__main__":
     task = Task()
-    task.run(google_results_file="Google_result3.json", ask_results_file="hw1.json")
-    task.write_statistics(statistics_file="hw1.csv")
+    task.run(google_results_file="Google_result3.json", ask_results_file="hw1_4.json", scrape=False)
+    task.write_statistics(statistics_file="hw1_4.csv")
