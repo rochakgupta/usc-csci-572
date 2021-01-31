@@ -248,5 +248,5 @@ class Task:
 
 if __name__ == "__main__":
     task = Task()
-    task.run(google_results_file="Google_result3.json", ask_results_file="hw1_4.json", scrape=False)
-    task.write_statistics(statistics_file="hw1_4.csv")
+    task.run(google_results_file="Google_result3.json", ask_results_file="hw1.json", scrape=False)
+    task.write_statistics(statistics_file="hw1.csv")
