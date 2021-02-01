@@ -5,7 +5,7 @@ Average Percent Overlap: 31.099999999999998
 Average Spearman Coefficient: -2.566595238095238
 
 The statistics show that Ask did not fair well in comparison to Google. If you look at the individual query statistics,
-you will see that Ask is able to find overlapping results for only around 60 queries. Out of these 60 queries, 30
-queries had a positive coefficient and 30 had a negative coefficient. The striking thing to note is that the average
-negative coefficient is too low than how high the average positive coefficient is. This means that Ask disagrees with
-Google much more than how much it agrees with it.
+you will see that Ask is able to find overlapping results for only around 70 queries. Out of these queries, around 30
+had a negative coefficient. The striking thing to note is that the average negative coefficient is too low than how
+high the average positive coefficient is. This means that Ask disagrees with Google much more than how much it agrees
+with it.
