@@ -1,4 +1,7 @@
 */.idea/
 */venv/
 **/*.pyc
-**/*/__pycache__
+**/*/__pycache__/
+**/*.iml
+**/*/target/
+**/*/test/resources/
