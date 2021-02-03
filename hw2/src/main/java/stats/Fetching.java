@@ -34,7 +34,10 @@ public class Fetching extends Stat {
         CSVWriter csvWriter = getCSVWriter(filepath);
         csvWriter.writeNext(new String[]{"URL", "Status"});
         for (Item item : Fetching.getInstance().items) {
-            csvWriter.writeNext(new String[]{item.url, String.valueOf(item.statusCode)});
+            csvWriter.writeNext(new String[]{
+                    cleanURL(item.url),
+                    String.valueOf(item.statusCode)
+            });
         }
         csvWriter.close();
     }

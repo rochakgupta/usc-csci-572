@@ -18,14 +18,6 @@ public class Crawler extends WebCrawler {
     private static final Pattern IMAGE_PATTERNS = Pattern.compile(".*(\\.(jpe?g|ico|png|bmp|svg|gif|webp|tiff))$");
 
     @Override
-    protected WebURL handleUrlBeforeProcess(WebURL curURL) {
-        String urlString = curURL.getURL();
-        urlString = urlString.replace(',', '-');
-        curURL.setURL(urlString);
-        return curURL;
-    }
-
-    @Override
     public boolean shouldVisit(Page page, WebURL url) {
         String urlString = url.getURL();
         boolean fetching = (urlString.startsWith("http://www.usatoday.com")

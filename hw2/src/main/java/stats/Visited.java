@@ -35,7 +35,7 @@ public class Visited extends Stat {
         csvWriter.writeNext(new String[]{"URL", "Size (Bytes)", "# of Outlinks", "Content Type"});
         for (Item item : Visited.getInstance().items) {
             csvWriter.writeNext(new String[]{
-                    item.url,
+                    cleanURL(item.url),
                     String.valueOf(item.size),
                     String.valueOf(item.numberOfOutlinks),
                     item.contentType

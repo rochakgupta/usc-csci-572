@@ -32,7 +32,10 @@ public class Discovered extends Stat {
     public static void write(String filepath) throws IOException {
         CSVWriter csvWriter = getCSVWriter(filepath);
         for (Item item : Discovered.getInstance().items) {
-            csvWriter.writeNext(new String[]{item.url, item.fetching ? "OK" : "N_OK"});
+            csvWriter.writeNext(new String[]{
+                    cleanURL(item.url),
+                    item.fetching ? "OK" : "N_OK"
+            });
         }
         csvWriter.close();
     }

@@ -22,4 +22,8 @@ public class Stat {
         Files.deleteIfExists(path);
         Files.createFile(path);
     }
+
+    static String cleanURL(String url) {
+        return url.replace(",", "-");
+    }
 }
