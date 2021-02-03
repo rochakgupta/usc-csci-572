@@ -20,17 +20,27 @@ public class Crawler extends WebCrawler {
     @Override
     public boolean shouldVisit(Page page, WebURL url) {
         String urlString = url.getURL();
-        boolean fetching = (urlString.startsWith("http://www.usatoday.com")
-                                || urlString.startsWith("https://www.usatoday.com"))
-                            && (!hasExtension(urlString)
-                                || DOC_PATTERNS.matcher(urlString).matches()
-                                || IMAGE_PATTERNS.matcher(urlString).matches());
-        Discovered.add(urlString, fetching);
-        return fetching;
+        Discovered.Item item = Discovered.find(urlString);
+        if (item == null) {
+            boolean fetching = hasRequiredHostname(url) && (!hasExtension(url) || hasRequiredExtension(url));
+            Discovered.add(urlString, fetching);
+            return fetching;
+        } else {
+            Discovered.add(urlString, item.isFetching());
+            return false;
+        }
     }
 
-    private boolean hasExtension(String url) {
-        String filename = url.substring(url.lastIndexOf("/") + 1);
+    private boolean hasRequiredHostname(WebURL url) {
+        String domain = url.getDomain();
+        String subdomain = url.getSubDomain();
+        String hostname = String.format("%s.%s", subdomain, domain);
+        return hostname.equals("www.usatoday.com");
+    }
+
+    private boolean hasExtension(WebURL url) {
+        String path = url.getPath();
+        String filename = path.substring(path.lastIndexOf("/") + 1);
         if (filename.length() == 0) {
             return false;
         }
@@ -39,6 +49,11 @@ public class Crawler extends WebCrawler {
             return false;
         }
         return true;
+    }
+
+    private boolean hasRequiredExtension(WebURL url) {
+        String path = url.getPath();
+        return DOC_PATTERNS.matcher(path).matches() || IMAGE_PATTERNS.matcher(path).matches();
     }
 
     @Override
@@ -62,7 +77,7 @@ public class Crawler extends WebCrawler {
 
     private String getContentType(Page page) {
         String contentType = page.getContentType();
-        return  contentType.substring(0, contentType.indexOf(';'));
+        return contentType.substring(0, contentType.indexOf(';'));
     }
 
     private int getNumberOfOutlinks(Page page) {

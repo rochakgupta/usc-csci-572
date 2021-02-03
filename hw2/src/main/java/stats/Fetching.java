@@ -2,7 +2,6 @@ package stats;
 
 import com.opencsv.CSVWriter;
 
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;

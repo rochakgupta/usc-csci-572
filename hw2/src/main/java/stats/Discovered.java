@@ -2,7 +2,6 @@ package stats;
 
 import com.opencsv.CSVWriter;
 
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +28,11 @@ public class Discovered extends Stat {
         Discovered.getInstance().items.add(Item.of(url, fetching));
     }
 
+    synchronized public static Item find(String url) {
+        return Discovered.getInstance().items.parallelStream().filter(item -> item.url.equals(url)).findFirst().orElse(
+                null);
+    }
+
     public static void write(String filepath) throws IOException {
         CSVWriter csvWriter = getCSVWriter(filepath);
         for (Item item : Discovered.getInstance().items) {
@@ -40,16 +44,20 @@ public class Discovered extends Stat {
         csvWriter.close();
     }
 
-    private static class Item {
-        String url;
+    public static class Item {
+        private String url;
 
-        boolean fetching;
+        private boolean fetching;
 
         public static Item of(String url, boolean fetching) {
             Item item = new Item();
             item.url = url;
             item.fetching = fetching;
             return item;
+        }
+
+        public boolean isFetching() {
+            return fetching;
         }
     }
 }
