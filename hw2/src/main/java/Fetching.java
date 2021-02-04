@@ -1,12 +1,10 @@
-package stats;
-
 import com.opencsv.CSVWriter;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Fetching extends Stat {
+public class Fetching {
 
     private static Fetching instance = null;
 
@@ -16,7 +14,7 @@ public class Fetching extends Stat {
 
     }
 
-    synchronized public static Fetching getInstance() {
+    synchronized private static Fetching getInstance() {
         if (instance == null) {
             Fetching fetching = new Fetching();
             fetching.items = new ArrayList<>();
@@ -29,19 +27,23 @@ public class Fetching extends Stat {
         Fetching.getInstance().items.add(Item.of(url, statusCode));
     }
 
-    public static void write(String filepath) throws IOException {
-        CSVWriter csvWriter = getCSVWriter(filepath);
+    synchronized public static List<Item> getItems() {
+        return Fetching.getInstance().items;
+    }
+
+    public static void write() throws IOException {
+        CSVWriter csvWriter = FileUtil.getCSVWriter(Config.FETCHING_FILE_PATH);
         csvWriter.writeNext(new String[]{"URL", "Status"});
         for (Item item : Fetching.getInstance().items) {
             csvWriter.writeNext(new String[]{
-                    cleanURL(item.url),
+                    FileUtil.cleanUrl(item.getUrl()),
                     String.valueOf(item.statusCode)
             });
         }
         csvWriter.close();
     }
 
-    private static class Item {
+    static class Item {
         String url;
 
         int statusCode;
@@ -55,6 +57,14 @@ public class Fetching extends Stat {
             item.url = url;
             item.statusCode = statusCode;
             return item;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public int getStatusCode() {
+            return statusCode;
         }
     }
 }

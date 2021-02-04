@@ -3,9 +3,6 @@ import edu.uci.ics.crawler4j.crawler.WebCrawler;
 import edu.uci.ics.crawler4j.url.WebURL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import stats.Discovered;
-import stats.Fetching;
-import stats.Visited;
 
 import java.util.regex.Pattern;
 
@@ -22,11 +19,12 @@ public class Crawler extends WebCrawler {
         String urlString = url.getURL();
         Discovered.Item item = Discovered.find(urlString);
         if (item == null) {
-            boolean fetching = hasRequiredHostname(url) && (!hasExtension(url) || hasRequiredExtension(url));
-            Discovered.add(urlString, fetching);
+            boolean withinWebsite = hasRequiredHostname(url);
+            boolean fetching = withinWebsite && (!hasExtension(url) || hasRequiredExtension(url));
+            Discovered.add(urlString, fetching, withinWebsite);
             return fetching;
         } else {
-            Discovered.add(urlString, item.isFetching());
+            Discovered.add(urlString, item.isFetching(), item.isWithinWebsite());
             return false;
         }
     }
@@ -35,7 +33,7 @@ public class Crawler extends WebCrawler {
         String domain = url.getDomain();
         String subdomain = url.getSubDomain();
         String hostname = String.format("%s.%s", subdomain, domain);
-        return hostname.equals("www.usatoday.com");
+        return hostname.equals(Config.NEWS_WEBSITE_HOSTNAME);
     }
 
     private boolean hasExtension(WebURL url) {

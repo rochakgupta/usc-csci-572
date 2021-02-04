@@ -1,12 +1,10 @@
-package stats;
-
 import com.opencsv.CSVWriter;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Visited extends Stat {
+public class Visited {
 
     private static Visited instance = null;
 
@@ -16,7 +14,7 @@ public class Visited extends Stat {
 
     }
 
-    synchronized public static Visited getInstance() {
+    synchronized private static Visited getInstance() {
         if (instance == null) {
             Visited visited = new Visited();
             visited.items = new ArrayList<>();
@@ -29,28 +27,32 @@ public class Visited extends Stat {
         Visited.getInstance().items.add(Item.of(url, size, numberOfOutlinks, contentType));
     }
 
-    public static void write(String filepath) throws IOException {
-        CSVWriter csvWriter = getCSVWriter(filepath);
+    static synchronized public List<Item> getItems() {
+        return Visited.getInstance().items;
+    }
+
+    public static void write() throws IOException {
+        CSVWriter csvWriter = FileUtil.getCSVWriter(Config.VISITED_FILE_PATH);
         csvWriter.writeNext(new String[]{"URL", "Size (Bytes)", "# of Outlinks", "Content Type"});
         for (Item item : Visited.getInstance().items) {
             csvWriter.writeNext(new String[]{
-                    cleanURL(item.url),
-                    String.valueOf(item.size),
-                    String.valueOf(item.numberOfOutlinks),
-                    item.contentType
+                    FileUtil.cleanUrl(item.getUrl()),
+                    String.valueOf(item.getSize()),
+                    String.valueOf(item.getNumberOfOutlinks()),
+                    item.getContentType()
             });
         }
         csvWriter.close();
     }
 
-    private static class Item {
-        String url;
+    static class Item {
+        private String url;
 
-        int size;
+        private int size;
 
-        int numberOfOutlinks;
+        private int numberOfOutlinks;
 
-        String contentType;
+        private String contentType;
 
         private Item() {
 
@@ -63,6 +65,22 @@ public class Visited extends Stat {
             visited.numberOfOutlinks = numberOfOutlinks;
             visited.contentType = contentType;
             return visited;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public int getSize() {
+            return size;
+        }
+
+        public int getNumberOfOutlinks() {
+            return numberOfOutlinks;
+        }
+
+        public String getContentType() {
+            return contentType;
         }
     }
 }

@@ -1,12 +1,10 @@
-package stats;
-
 import com.opencsv.CSVWriter;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Discovered extends Stat {
+public class Discovered {
     private static Discovered instance = null;
 
     private List<Item> items;
@@ -15,7 +13,7 @@ public class Discovered extends Stat {
 
     }
 
-    synchronized public static Discovered getInstance() {
+    synchronized private static Discovered getInstance() {
         if (instance == null) {
             Discovered discovered = new Discovered();
             discovered.items = new ArrayList<>();
@@ -24,8 +22,8 @@ public class Discovered extends Stat {
         return instance;
     }
 
-    synchronized public static void add(String url, boolean fetching) {
-        Discovered.getInstance().items.add(Item.of(url, fetching));
+    synchronized public static void add(String url, boolean fetching, boolean withinWebsite) {
+        Discovered.getInstance().items.add(Item.of(url, fetching, withinWebsite));
     }
 
     synchronized public static Item find(String url) {
@@ -33,12 +31,16 @@ public class Discovered extends Stat {
                 null);
     }
 
-    public static void write(String filepath) throws IOException {
-        CSVWriter csvWriter = getCSVWriter(filepath);
+    synchronized public static List<Item> getItems() {
+        return Discovered.getInstance().items;
+    }
+
+    public static void write() throws IOException {
+        CSVWriter csvWriter = FileUtil.getCSVWriter(Config.DISCOVERED_FILE_PATH);
         for (Item item : Discovered.getInstance().items) {
             csvWriter.writeNext(new String[]{
-                    cleanURL(item.url),
-                    item.fetching ? "OK" : "N_OK"
+                    FileUtil.cleanUrl(item.getUrl()),
+                    item.isFetching() ? "OK" : "N_OK"
             });
         }
         csvWriter.close();
@@ -49,15 +51,26 @@ public class Discovered extends Stat {
 
         private boolean fetching;
 
-        public static Item of(String url, boolean fetching) {
+        private boolean withinWebsite;
+
+        public static Item of(String url, boolean fetching, boolean withinWebsite) {
             Item item = new Item();
             item.url = url;
             item.fetching = fetching;
+            item.withinWebsite = withinWebsite;
             return item;
+        }
+
+        public String getUrl() {
+            return url;
         }
 
         public boolean isFetching() {
             return fetching;
+        }
+
+        public boolean isWithinWebsite() {
+            return withinWebsite;
         }
     }
 }
