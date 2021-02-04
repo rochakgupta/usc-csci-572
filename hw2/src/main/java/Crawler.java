@@ -33,7 +33,7 @@ public class Crawler extends WebCrawler {
         String domain = url.getDomain();
         String subdomain = url.getSubDomain();
         String hostname = String.format("%s.%s", subdomain, domain);
-        return hostname.equals(Config.NEWS_WEBSITE_HOSTNAME);
+        return hostname.equals(Config.WEBSITE_HOSTNAME);
     }
 
     private boolean hasExtension(WebURL url) {

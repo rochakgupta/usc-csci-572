@@ -48,7 +48,7 @@ public class Summary {
     private static void writeHeader(FileWriter fileWriter) throws IOException {
         writeStatistic(fileWriter, "Name", Config.NAME);
         writeStatistic(fileWriter, "USC ID", Config.USC_ID);
-        writeStatistic(fileWriter, "News site crawled", String.format("%s.com", Config.NEWS_WEBSITE_DOMAIN));
+        writeStatistic(fileWriter, "News site crawled", String.format("%s.com", Config.WEBSITE_DOMAIN));
         writeStatistic(fileWriter, "Number of threads", Config.NUMBER_OF_CRAWLERS);
     }
 
