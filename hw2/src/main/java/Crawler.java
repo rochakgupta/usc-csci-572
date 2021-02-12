@@ -10,7 +10,7 @@ public class Crawler extends WebCrawler {
 
     private static final Logger logger = LoggerFactory.getLogger(Crawler.class);
 
-    private static final Pattern DOC_PATTERNS = Pattern.compile(".*(\\.(html?|pdf|docx?|json|txt|xlsx?))$");
+    private static final Pattern DOC_PATTERNS = Pattern.compile(".*(\\.(html?|pdf|txt|docx?|xlsx?))$");
 
     private static final Pattern IMAGE_PATTERNS = Pattern.compile(".*(\\.(jpe?g|ico|png|bmp|svg|gif|webp|tiff))$");
 
@@ -39,14 +39,7 @@ public class Crawler extends WebCrawler {
     private boolean hasExtension(WebURL url) {
         String path = url.getPath();
         String filename = path.substring(path.lastIndexOf("/") + 1);
-        if (filename.length() == 0) {
-            return false;
-        }
-        String extension = filename.substring(filename.lastIndexOf(".") + 1);
-        if (extension.length() == 0) {
-            return false;
-        }
-        return true;
+        return filename.contains(".");
     }
 
     private boolean hasRequiredExtension(WebURL url) {
@@ -63,10 +56,18 @@ public class Crawler extends WebCrawler {
     @Override
     public void visit(Page page) {
         String url = page.getWebURL().getURL();
-        int size = getPageSize(page);
         String contentType = getContentType(page);
-        int numberOfOutlinks = getNumberOfOutlinks(page);
-        Visited.add(url, size, numberOfOutlinks, contentType);
+        if (hasRequiredContentType(contentType)) {
+            int size = getPageSize(page);
+            int numberOfOutlinks = getNumberOfOutlinks(page);
+            Visited.add(url, size, numberOfOutlinks, contentType);
+        }
+    }
+
+    private boolean hasRequiredContentType(String contentType) {
+        return contentType.startsWith("image")
+                || contentType.equalsIgnoreCase("application/pdf")
+                || contentType.equalsIgnoreCase("text/html");
     }
 
     private int getPageSize(Page page) {

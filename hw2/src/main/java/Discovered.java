@@ -2,12 +2,16 @@ import com.opencsv.CSVWriter;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Discovered {
     private static Discovered instance = null;
 
     private List<Item> items;
+
+    private Map<String, Item> itemsMap;
 
     private Discovered() {
 
@@ -17,18 +21,21 @@ public class Discovered {
         if (instance == null) {
             Discovered discovered = new Discovered();
             discovered.items = new ArrayList<>();
+            discovered.itemsMap = new HashMap<>();
             instance = discovered;
         }
         return instance;
     }
 
     synchronized public static void add(String url, boolean fetching, boolean withinWebsite) {
-        Discovered.getInstance().items.add(Item.of(url, fetching, withinWebsite));
+        Item item = Item.of(url, fetching, withinWebsite);
+        Discovered discovered = Discovered.getInstance();
+        discovered.items.add(item);
+        discovered.itemsMap.putIfAbsent(url, item);
     }
 
     synchronized public static Item find(String url) {
-        return Discovered.getInstance().items.parallelStream().filter(item -> item.url.equals(url)).findFirst().orElse(
-                null);
+        return Discovered.getInstance().itemsMap.get(url);
     }
 
     synchronized public static List<Item> getItems() {
