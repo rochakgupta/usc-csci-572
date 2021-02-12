@@ -76,7 +76,10 @@ public class Crawler extends WebCrawler {
 
     private String getContentType(Page page) {
         String contentType = page.getContentType();
-        return contentType.substring(0, contentType.indexOf(';'));
+        if (contentType.contains(";")) {
+            contentType = contentType.substring(0, contentType.indexOf(';'));
+        }
+        return contentType;
     }
 
     private int getNumberOfOutlinks(Page page) {
