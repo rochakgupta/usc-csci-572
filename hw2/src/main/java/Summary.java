@@ -64,11 +64,12 @@ public class Summary {
     }
 
     private static void writeUrlStatistics(FileWriter fileWriter) throws IOException {
-        List<Discovered.Item> items = Discovered.getItems();
-        Integer urls = items.size();
-        long uniqueUrls = getNumberOfUniqueUrls(items);
-        long withinWebsiteUrls = getNumberOfWithinWebsiteUniqueUrls(items);
-        long outsideWebsiteUrls = getNumberOfOutsideWebsiteUniqueUrls(items);
+        List<Discovered.Item> discovered = Discovered.getItems();
+        List<Visited.Item> visited = Visited.getItems();
+        long urls = getNumberOfOutlinks(visited);
+        long uniqueUrls = getNumberOfUniqueUrls(discovered);
+        long withinWebsiteUrls = getNumberOfWithinWebsiteUniqueUrls(discovered);
+        long outsideWebsiteUrls = uniqueUrls - withinWebsiteUrls;
 
         writeStatistic(fileWriter, "Total URLs extracted", urls);
         writeStatistic(fileWriter, "# unique URLs extracted", uniqueUrls);
@@ -120,7 +121,11 @@ public class Summary {
     }
 
     private static long getNumberOfSuccessfulFetches(List<Fetching.Item> items) {
-        return items.stream().filter(item -> item.statusCode == 200).count();
+        return items.stream().filter(item -> item.getStatusCode() == 200).count();
+    }
+
+    private static long getNumberOfOutlinks(List<Visited.Item> items) {
+        return items.stream().mapToLong(Visited.Item::getNumberOfOutlinks).sum();
     }
 
     private static long getNumberOfUniqueUrls(List<Discovered.Item> items) {
@@ -129,10 +134,6 @@ public class Summary {
 
     private static long getNumberOfWithinWebsiteUniqueUrls(List<Discovered.Item> items) {
         return items.stream().filter(Discovered.Item::isWithinWebsite).map(Discovered.Item::getUrl).distinct().count();
-    }
-
-    private static long getNumberOfOutsideWebsiteUniqueUrls(List<Discovered.Item> items) {
-        return items.stream().filter(item -> !item.isWithinWebsite()).map(Discovered.Item::getUrl).distinct().count();
     }
 
     private static Map<Integer, Long> getCountsOfStatusCodes(List<Fetching.Item> items) {

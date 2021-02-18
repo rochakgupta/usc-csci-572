@@ -10,7 +10,7 @@ public class Crawler extends WebCrawler {
 
     private static final Logger logger = LoggerFactory.getLogger(Crawler.class);
 
-    private static final Pattern DOC_PATTERNS = Pattern.compile(".*(\\.(html?|pdf|txt|docx?|xlsx?))$");
+    private static final Pattern DOC_PATTERNS = Pattern.compile(".*(\\.(html?|php|pdf|docx?))$");
 
     private static final Pattern IMAGE_PATTERNS = Pattern.compile(".*(\\.(jpe?g|ico|png|bmp|svg|gif|webp|tiff))$");
 
@@ -32,6 +32,9 @@ public class Crawler extends WebCrawler {
     private boolean hasRequiredHostname(WebURL url) {
         String domain = url.getDomain();
         String subdomain = url.getSubDomain();
+        if (subdomain.isEmpty()) {
+            subdomain = "www";
+        }
         String hostname = String.format("%s.%s", subdomain, domain);
         return hostname.equals(Config.WEBSITE_HOSTNAME);
     }
@@ -43,7 +46,7 @@ public class Crawler extends WebCrawler {
     }
 
     private boolean hasRequiredExtension(WebURL url) {
-        String path = url.getPath();
+        String path = url.getPath().toLowerCase();
         return DOC_PATTERNS.matcher(path).matches() || IMAGE_PATTERNS.matcher(path).matches();
     }
 
@@ -65,9 +68,12 @@ public class Crawler extends WebCrawler {
     }
 
     private boolean hasRequiredContentType(String contentType) {
+        contentType = contentType.toLowerCase();
         return contentType.startsWith("image")
-                || contentType.equalsIgnoreCase("application/pdf")
-                || contentType.equalsIgnoreCase("text/html");
+                || contentType.equals("application/pdf")
+                || contentType.equals("application/msword")
+                || contentType.equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+                || contentType.equals("text/html");
     }
 
     private int getPageSize(Page page) {
@@ -84,20 +90,5 @@ public class Crawler extends WebCrawler {
 
     private int getNumberOfOutlinks(Page page) {
         return page.getParseData().getOutgoingUrls().size();
-    }
-
-    @Override
-    protected void onUnexpectedStatusCode(String urlStr, int statusCode, String contentType, String description) {
-        super.onUnexpectedStatusCode(urlStr, statusCode, contentType, description);
-    }
-
-    @Override
-    protected void onContentFetchError(WebURL webUrl) {
-        super.onContentFetchError(webUrl);
-    }
-
-    @Override
-    protected void onParseError(WebURL webUrl) {
-        super.onParseError(webUrl);
     }
 }
