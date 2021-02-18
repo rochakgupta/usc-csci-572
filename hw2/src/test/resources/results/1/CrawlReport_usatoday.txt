@@ -1,0 +1,39 @@
+Name: Rochak Gupta
+USC ID: 9683467768
+News site crawled: usatoday.com
+Number of threads: 7
+
+Fetch Statistics:
+=================
+# fetches attempted: 19969
+# fetches succeeded: 19048
+# fetches failed or aborted: 921
+
+Outgoing URLs:
+==============
+Total URLs extracted: 2411684
+# unique URLs extracted: 804846
+# unique URLs within News Site: 600434
+# unique URLs outside News Site: 204412
+
+Status Codes:
+=============
+200 OK: 19048
+301 Moved Permanently: 896
+302 Moved Temporarily: 4
+307 Temporary Redirect: 3
+500 Internal Server Error: 16
+502 Bad Gateway: 2
+
+File Sizes:
+===========
+< 1KB: 0
+1KB ~ <10KB: 1
+10KB ~ <100KB: 218
+100KB ~ <1MB: 18778
+>= 1MB: 51
+
+Content Types:
+==============
+text/html: 19047
+image/svg+xml: 1
