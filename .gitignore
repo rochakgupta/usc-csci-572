@@ -5,3 +5,6 @@
 **/*.iml
 **/*/target/
 **/*/test/resources/
+
+# HW3
+./hw3/data/**/*/
