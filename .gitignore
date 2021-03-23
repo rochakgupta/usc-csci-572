@@ -7,4 +7,5 @@
 **/*/test/resources/
 
 # HW3
-./hw3/data/**/*/
+./hw3/data/devdata/
+./hw3/data/fulldata/
