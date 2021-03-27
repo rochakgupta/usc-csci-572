@@ -1,12 +1,10 @@
 import csv
 
 
-def fulldata_document_index():
-    req_document = '5722018484'
-
-    with open(f'./fulldata/{req_document}.txt', 'w') as o:
+def fulldata_document_index(req_document, input_file, output_file):
+    with open(output_file, 'w') as o:
         writer = csv.writer(o, delimiter='\t')
-        with open('./fulldata/output_sorted.txt', 'r') as i:
+        with open(input_file, 'r') as i:
             reader = csv.reader(i, delimiter='\t')
             for row in reader:
                 word, *index = row
@@ -17,7 +15,7 @@ def fulldata_document_index():
                         break
 
 
-def fulldata_index_sample():
+def fulldata_index_sample(input_file, output_file):
     words = [
         'architecture',
         'technology',
@@ -33,21 +31,21 @@ def fulldata_index_sample():
 
     word_row = {}
 
-    with open('./fulldata/output_sorted.txt', 'r') as i:
+    with open(input_file, 'r') as i:
         reader = csv.reader(i, delimiter='\t')
         for row in reader:
             word, *index = row
             if word in words_set:
                 word_row[word] = row
 
-    with open('./fulldata/index.txt', 'w') as o:
+    with open(output_file, 'w') as o:
         writer = csv.writer(o, delimiter='\t')
         for word in words:
             row = word_row[word]
             writer.writerow(row)
 
 
-def devdata_bigrams_index_sample():
+def devdata_bigrams_index_sample(input_file, output_file):
     bigrams = [
         'computer science',
         'information retrieval',
@@ -60,20 +58,25 @@ def devdata_bigrams_index_sample():
 
     bigram_row = {}
 
-    with open('./devdata_bigrams/output_sorted.txt', 'r') as i:
+    with open(input_file, 'r') as i:
         reader = csv.reader(i, delimiter='\t')
         for row in reader:
             bigram, *index = row
             if bigram in bigrams_set:
                 bigram_row[bigram] = row
 
-    with open('./devdata_bigrams/index_bigrams.txt', 'w') as o:
+    with open(output_file, 'w') as o:
         writer = csv.writer(o, delimiter='\t')
         for bigram in bigrams:
             row = bigram_row[bigram]
             writer.writerow(row)
 
 
-fulldata_document_index()
-fulldata_index_sample()
-devdata_bigrams_index_sample()
+fulldata_document_index(
+    '5722018484', './fulldata/output_sorted.txt', './fulldata/5722018484.txt')
+
+fulldata_index_sample('./fulldata/output_sorted.txt',
+                      './fulldata/index.txt')
+
+devdata_bigrams_index_sample(
+    './devdata_bigrams/output_sorted.txt', './devdata_bigrams/index_bigrams.txt')

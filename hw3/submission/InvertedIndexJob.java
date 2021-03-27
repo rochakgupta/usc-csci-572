@@ -23,7 +23,7 @@ public class InvertedIndexJob {
 
         @Override
         protected void map(Object key, Text value, Context context) throws IOException, InterruptedException {
-            String[] parts = value.toString().split("\\t");
+            String[] parts = value.toString().split("\\t", 2);
 
             docId.set(parts[0]);
 
