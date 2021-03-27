@@ -6,3 +6,7 @@
 **/*/target/
 **/*/test/resources/
 **/*/.vscode/
+
+# HW3 ->
+hw3/output/devdata_bigrams/output_sorted.txt
+# <- HW3
