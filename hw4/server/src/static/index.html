@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>USC CSCI HW4</title>
+  <meta http-equiv="content-type">
+  <meta content="text/html">
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="/index.css" type="text/css">
+  <script src="/index.js" type="text/javascript"></script>
+</head>
+
+<body>
+  <div id="search-form">
+    <label for="search-input">Search</label>
+    <input id="search-input" type="text" name="search-input">
+
+    <div>
+      <input type="radio" id="search-type-lucene" name="search-type" value="lucene" class="search-type">
+      <label for="search-type-lucene">Lucene</label>
+
+      <input type="radio" id="search-type-page-rank" name="search-type" value="page-rank" class="search-type">
+      <label for="search-type-page-rank">Page Rank</label>
+    </div>
+
+    <input id="search-button" type="submit" value="Submit">
+  </div>
+  <div id="search-results">
+  </div>
+</body>
+<script>
+  const onBodyLoad = () => {
+    App.init();
+  }
+
+  window.addEventListener('load', onBodyLoad);
+</script>
+
+</html>
