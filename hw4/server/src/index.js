@@ -25,8 +25,8 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, './static')));
 
 app.get('/search', (req, res) => {
-    var query = req.query.query;
-    solr.search(query, function (error, data) {
+    var query = req.query;
+    solr.search(query.query, query.type, function (error, data) {
         if (error) {
             res.status(500).json({
                 message: error.message

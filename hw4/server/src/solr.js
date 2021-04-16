@@ -44,11 +44,23 @@ function buildData(object) {
     }
 }
 
-function search(query, callback) {
-    const solrQuery = client.createQuery()
-        .q(query)
-        .start(0)
-        .rows(limit);
+function buildQuery(query, type) {
+    if (type === 'lucene') {
+        return client.createQuery()
+            .q(query)
+            .start(0)
+            .rows(limit)
+    } else {
+        return client.createQuery()
+            .q(query)
+            .sort({ pageRankFile: "desc" })
+            .start(0)
+            .rows(limit)
+    }
+}
+
+function search(query, type, callback) {
+    const solrQuery = buildQuery(query, type);
 
     client.search(solrQuery, function (error, object) {
         if (error) {
