@@ -44,7 +44,7 @@ function buildData(object) {
     response.docs.forEach(function (doc) {
         documents.push({
             id: parseValue(doc.id),
-            description: parseValue(doc.description),
+            description: parseValue(doc.og_description),
             url: parseValue(doc.og_url),
             title: parseValue(doc.title)
         })
