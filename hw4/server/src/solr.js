@@ -1,12 +1,26 @@
 var solr = require('solr-client');
 
-var client = solr.createClient({
-    core: 'myexample'
-});
+var core = 'myexample';
 
 var limit = 10;
 
-function parseAttribute(value) {
+var statusCodes = {
+    BAD_REQUEST: 400,
+    INTERNAL_SERVER_ERROR: 500
+}
+
+class HttpError extends Error {
+    constructor(statusCode, message) {
+        super(message);
+        this.statusCode = statusCode;
+    }
+}
+
+var client = solr.createClient({
+    core
+});
+
+function parseValue(value) {
     if (!value) {
         return 'N/A';
     }
@@ -29,10 +43,10 @@ function buildData(object) {
     var documents = [];
     response.docs.forEach(function (doc) {
         documents.push({
-            id: parseAttribute(doc.id),
-            description: parseAttribute(doc.description),
-            url: parseAttribute(doc.og_url),
-            title: parseAttribute(doc.title)
+            id: parseValue(doc.id),
+            description: parseValue(doc.description),
+            url: parseValue(doc.og_url),
+            title: parseValue(doc.title)
         })
     });
 
@@ -45,7 +59,7 @@ function buildData(object) {
 }
 
 function buildSolrQuery(query, type, callback) {
-    let solrQuery;
+    var solrQuery;
     switch (type) {
         case 'lucene':
             solrQuery = client.createQuery()
@@ -61,8 +75,8 @@ function buildSolrQuery(query, type, callback) {
                 .rows(limit);
             break;
         default:
-            callback(new Error('Invalid query type'), null);
-            return
+            callback(new HttpError(statusCodes.BAD_REQUEST, 'Invalid query type'), null);
+            return;
     }
     callback(null, solrQuery);
 }
@@ -71,7 +85,7 @@ function runSolrQuery(solrQuery, callback) {
     client.search(solrQuery, function (error, object) {
         if (error) {
             console.log(error);
-            callback(error, null);
+            callback(new HttpError(statusCodes.INTERNAL_SERVER_ERROR, 'Solr client errored'), null);
         } else {
             var data = buildData(object);
             callback(null, data);

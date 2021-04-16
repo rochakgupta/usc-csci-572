@@ -28,7 +28,7 @@ app.get('/search', (req, res) => {
     var query = req.query;
     solr.search(query.query, query.type, function (error, data) {
         if (error) {
-            res.status(500).json({
+            res.status(error.statusCode).json({
                 message: error.message
             })
         } else {

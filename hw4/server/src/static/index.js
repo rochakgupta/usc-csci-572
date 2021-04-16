@@ -12,8 +12,8 @@ const App = (() => {
             const { title, url, id, description } = document;
             innerHTML += `
                 <div>
-                    <div>Title: <a target='_blank' href=${url}>${title}<a/></div>
-                    <div>URL: <a target='_blank' href=${url}>${url}<a/></div>
+                    <div>Title: <a target='_blank' href=${url}>${title}</a></div>
+                    <div>URL: <a target='_blank' href=${url}>${url}</a></div>
                     <div>ID: ${id}</div>
                     <div>Description: ${description}</div>
                 </div>
