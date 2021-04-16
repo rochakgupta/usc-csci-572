@@ -23,7 +23,7 @@ const App = (() => {
     }
 
     const showMessage = (message) => {
-        searchResults.innerHTML = message;
+        searchResults.innerHTML = `<div>${message}<div>`;
     }
 
     const fetcher = (path, params = {}) => {
@@ -79,7 +79,7 @@ const App = (() => {
             event.preventDefault();
             await search();
         } else {
-            showMessage("Please enter query and select one of the two query types");
+            showMessage("Please enter query and select a query type");
         }
     }
 
