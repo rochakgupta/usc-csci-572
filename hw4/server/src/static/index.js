@@ -1,5 +1,5 @@
 const App = (() => {
-    "use strict";
+    'use strict';
 
     let searchQuery = null;
     let searchType = null;
@@ -47,12 +47,12 @@ const App = (() => {
                     } else if (data.message) {
                         throw new CheckedError(data.message);
                     } else {
-                        throw new CheckedError("Internal server error");
+                        throw new CheckedError('Internal server error');
                     }
                 })
             ).catch((error) => {
                 if (!(error instanceof CheckedError)) {
-                    error = new CheckedError("Network error");
+                    error = new CheckedError('Network error');
                 }
                 throw error;
             })
@@ -79,7 +79,7 @@ const App = (() => {
             event.preventDefault();
             await search();
         } else {
-            showMessage("Please enter query and select a query type");
+            showMessage('Please enter query and select a query type');
         }
     }
 
@@ -93,11 +93,11 @@ const App = (() => {
 
         const searchTypeInputs = document.querySelectorAll('.search-type');
         searchTypeInputs.forEach((searchTypeInput) => {
-            searchTypeInput.addEventListener("click", searchTypeInputClickHandler);
+            searchTypeInput.addEventListener('click', searchTypeInputClickHandler);
         })
 
         const searchButton = document.getElementById('search-button');
-        searchButton.addEventListener("click", searchButtonClickHandler);
+        searchButton.addEventListener('click', searchButtonClickHandler);
 
         searchResults = document.getElementById('search-results');
     }

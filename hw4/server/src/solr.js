@@ -8,13 +8,13 @@ var limit = 10;
 
 function parseAttribute(value) {
     if (!value) {
-        return "N/A";
+        return 'N/A';
     }
     if (!Array.isArray(value)) {
         return value;
     }
     if (value.length === 0 || !value) {
-        return "N/A";
+        return 'N/A';
     }
     return value[0];
 }
@@ -44,24 +44,30 @@ function buildData(object) {
     }
 }
 
-function buildQuery(query, type) {
-    if (type === 'lucene') {
-        return client.createQuery()
-            .q(query)
-            .start(0)
-            .rows(limit)
-    } else {
-        return client.createQuery()
-            .q(query)
-            .sort({ pageRankFile: "desc" })
-            .start(0)
-            .rows(limit)
+function buildSolrQuery(query, type, callback) {
+    let solrQuery;
+    switch (type) {
+        case 'lucene':
+            solrQuery = client.createQuery()
+                .q(query)
+                .start(0)
+                .rows(limit);
+            break;
+        case 'pagerank':
+            solrQuery = client.createQuery()
+                .q(query)
+                .sort({ pageRankFile: 'desc' })
+                .start(0)
+                .rows(limit);
+            break;
+        default:
+            callback(new Error('Invalid query type'), null);
+            return
     }
+    callback(null, solrQuery);
 }
 
-function search(query, type, callback) {
-    const solrQuery = buildQuery(query, type);
-
+function runSolrQuery(solrQuery, callback) {
     client.search(solrQuery, function (error, object) {
         if (error) {
             console.log(error);
@@ -69,6 +75,17 @@ function search(query, type, callback) {
         } else {
             var data = buildData(object);
             callback(null, data);
+        }
+    });
+}
+
+function search(query, type, callback) {
+    buildSolrQuery(query, type, function (error, solrQuery) {
+        if (error) {
+            console.log(error);
+            callback(error, null);
+        } else {
+            runSolrQuery(solrQuery, callback);
         }
     });
 }
