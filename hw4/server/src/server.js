@@ -1,10 +1,10 @@
-var express = require('express');
-var expressWinston = require('express-winston');
-var path = require('path');
-var winston = require('winston');
-var solr = require('./solr');
+const express = require('express');
+const expressWinston = require('express-winston');
+const path = require('path');
+const winston = require('winston');
+const solr = require('./solr');
 
-var app = express();
+const app = express();
 
 app.use(expressWinston.logger({
     transports: [
@@ -25,11 +25,12 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, './static')));
 
 app.get('/search', (req, res) => {
-    var query = req.query;
-    solr.search(query.query, query.type, function (error, data) {
+    const { query, type } = req.query;
+    solr.search(query, type, (error, data) => {
         if (error) {
-            res.status(error.statusCode).json({
-                message: error.message
+            const { statusCode, message } = error;
+            res.status(statusCode).json({
+                message
             })
         } else {
             res.json(data)
@@ -41,7 +42,7 @@ app.get('*', (_req, res) => {
     res.sendFile(path.join(__dirname, './static/index.html'));
 });
 
-var PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 8080;
 
 app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);

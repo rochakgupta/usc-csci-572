@@ -4,14 +4,15 @@
   "description": "Server",
   "main": "index.js",
   "scripts": {
-    "watch": "nodemon --watch src src/index.js",
-    "start": "node src/index.js"
+    "watch": "nodemon --watch src src/server.js",
+    "start": "node src/server.js"
   },
   "author": "Rochak Gupta <rochak84@gmail.com>",
   "license": "MIT",
   "dependencies": {
     "express": "^4.17.1",
     "express-winston": "^4.1.0",
+    "fast-csv": "^4.3.6",
     "nodemon": "2.0.6",
     "solr-client": "^0.8.0",
     "winston": "^3.3.3"

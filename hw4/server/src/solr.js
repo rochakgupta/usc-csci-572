@@ -1,54 +1,23 @@
-var solr = require('solr-client');
+const solr = require('solr-client');
+const parser = require('./parser');
+const { statusCodes, ResponseError } = require('./response');
 
-var core = 'myexample';
+const buildData = async (object) => {
+    const {
+        response: {
+            numFound: total,
+            docs: documents
+        }
+    } = object;
 
-var limit = 10;
+    const start = Math.min(1, total);
+    const end = Math.min(limit, total);
 
-var statusCodes = {
-    BAD_REQUEST: 400,
-    INTERNAL_SERVER_ERROR: 500
-}
-
-class HttpError extends Error {
-    constructor(statusCode, message) {
-        super(message);
-        this.statusCode = statusCode;
+    for (let i = 0; i < documents.length; i++) {
+        let document = documents[i];
+        document = await parser.parseDocument(document);
+        documents[i] = document;
     }
-}
-
-var client = solr.createClient({
-    core
-});
-
-function parseValue(value) {
-    if (!value) {
-        return 'N/A';
-    }
-    if (!Array.isArray(value)) {
-        return value;
-    }
-    if (value.length === 0 || !value) {
-        return 'N/A';
-    }
-    return value[0];
-}
-
-function buildData(object) {
-    var response = object.response;
-
-    var total = response.numFound;
-    var start = Math.min(1, total);
-    var end = Math.min(limit, total);
-
-    var documents = [];
-    response.docs.forEach(function (doc) {
-        documents.push({
-            id: parseValue(doc.id),
-            description: parseValue(doc.og_description),
-            url: parseValue(doc.og_url),
-            title: parseValue(doc.title)
-        })
-    });
 
     return {
         start,
@@ -58,43 +27,56 @@ function buildData(object) {
     }
 }
 
-function buildSolrQuery(query, type, callback) {
-    var solrQuery;
+let client = null;
+
+const getClient = () => {
+    if (!client) {
+        client = solr.createClient({
+            core: 'myexample'
+        });
+    }
+    return client;
+}
+
+const limit = 10;
+
+const buildSolrQuery = (query, type, callback) => {
+    let solrQuery;
     switch (type) {
         case 'lucene':
-            solrQuery = client.createQuery()
+            solrQuery = getClient().createQuery()
                 .q(query)
                 .start(0)
                 .rows(limit);
             break;
         case 'pagerank':
-            solrQuery = client.createQuery()
+            solrQuery = getClient().createQuery()
                 .q(query)
                 .sort({ pageRankFile: 'desc' })
                 .start(0)
                 .rows(limit);
             break;
         default:
-            callback(new HttpError(statusCodes.BAD_REQUEST, 'Invalid query type'), null);
+            callback(new ResponseError(statusCodes.BAD_REQUEST, 'Invalid query type'), null);
             return;
     }
     callback(null, solrQuery);
 }
 
-function runSolrQuery(solrQuery, callback) {
-    client.search(solrQuery, function (error, object) {
+const runSolrQuery = (solrQuery, callback) => {
+    getClient().search(solrQuery, async (error, object) => {
         if (error) {
             console.log(error);
-            callback(new HttpError(statusCodes.INTERNAL_SERVER_ERROR, 'Solr client errored'), null);
+            callback(new ResponseError(statusCodes.INTERNAL_SERVER_ERROR, 'Solr client errored'), null);
         } else {
-            var data = buildData(object);
+            const data = await buildData(object);
             callback(null, data);
         }
     });
 }
 
-function search(query, type, callback) {
-    buildSolrQuery(query, type, function (error, solrQuery) {
+const search = async (query, type, callback) => {
+    buildSolrQuery(query, type, (error, solrQuery) => {
         if (error) {
             console.log(error);
             callback(error, null);
