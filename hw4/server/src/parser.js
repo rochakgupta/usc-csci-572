@@ -19,7 +19,6 @@ const parseDocument = async ({
     og_url: url,
     title
 }) => {
-
     if (validator.isValue(id)) {
         id = parseValue(id);
         if (!validator.isValue(url)) {
@@ -30,10 +29,8 @@ const parseDocument = async ({
         id = parseValue(id);
         url = parseValue(url);
     }
-
     description = parseValue(description);
     title = parseValue(title);
-
     return {
         id,
         url,

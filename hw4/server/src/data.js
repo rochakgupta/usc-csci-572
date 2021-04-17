@@ -12,7 +12,6 @@ const getFilepath = (filename) => `${filesDirectory}/${filename}`;
 
 const buildFilepathToUrlData = async () => {
     const data = {};
-
     return new Promise((resolve, reject) => {
         fs.createReadStream(filenameToUrlFilepath)
             .pipe(fastCsv.parse())
