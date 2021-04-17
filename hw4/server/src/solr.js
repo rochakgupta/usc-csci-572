@@ -1,6 +1,6 @@
 const solr = require('solr-client');
 const parser = require('./parser');
-const { statusCodes, ResponseError } = require('./response');
+const response = require('./response');
 
 const buildData = async (object) => {
     const {
@@ -57,7 +57,7 @@ const buildSolrQuery = (query, type, callback) => {
                 .rows(limit);
             break;
         default:
-            callback(new ResponseError(statusCodes.BAD_REQUEST, 'Invalid query type'), null);
+            callback(new response.BadRequestError('Invalid query type'), null);
             return;
     }
     callback(null, solrQuery);
@@ -67,7 +67,7 @@ const runSolrQuery = (solrQuery, callback) => {
     getClient().search(solrQuery, async (error, object) => {
         if (error) {
             console.log(error);
-            callback(new ResponseError(statusCodes.INTERNAL_SERVER_ERROR, 'Solr client errored'), null);
+            callback(new response.InternalServerError('Solr client errored'), null);
         } else {
             try {
                 const data = await buildData(object);

@@ -10,7 +10,21 @@ class ResponseError extends Error {
     }
 }
 
+class BadRequestError extends Error {
+    constructor(message) {
+        super(message);
+        this.statusCode = statusCodes.BAD_REQUEST;
+    }
+}
+
+class InternalServerError extends Error {
+    constructor(message) {
+        super(message);
+        this.statusCode = statusCodes.INTERNAL_SERVER_ERROR;
+    }
+}
+
 module.exports = {
-    statusCodes,
-    ResponseError
+    BadRequestError,
+    InternalServerError
 }

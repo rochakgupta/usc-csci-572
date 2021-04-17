@@ -1,6 +1,6 @@
 const fs = require('fs');
 const fastCsv = require('fast-csv');
-const { statusCodes, ResponseError } = require('./response');
+const response = require('./response');
 
 const dataDirectory = '/Users/rochakgupta/Documents/GitHub/usc-csci-572/hw4/data';
 
@@ -37,7 +37,7 @@ const getUrlByFilepath = async (filepath) => {
             filepathToUrlData = await buildFilepathToUrlData();
         } catch (error) {
             console.log(error);
-            throw new ResponseError(statusCodes.INTERNAL_SERVER_ERROR, 'Server errored while reading file to url csv');
+            throw new response.InternalServerError('Server errored while reading file to url csv');
         }
     }
     return filepathToUrlData[filepath];
