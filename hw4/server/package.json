@@ -2,7 +2,7 @@
   "name": "server",
   "version": "1.0.0",
   "description": "Server",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "watch": "nodemon --watch src src/server.js",
     "start": "node src/server.js"
