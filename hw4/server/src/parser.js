@@ -1,5 +1,5 @@
 const validator = require('./validator');
-const csv = require('./csv');
+const data = require('./data');
 
 const defaultValue = 'N/A';
 
@@ -23,7 +23,7 @@ const parseDocument = async ({
     if (validator.isValue(id)) {
         id = parseValue(id);
         if (!validator.isValue(url)) {
-            url = await csv.getUrlByFilepath(id);
+            url = await data.getUrlByFilepath(id);
         }
         url = parseValue(url);
     } else {

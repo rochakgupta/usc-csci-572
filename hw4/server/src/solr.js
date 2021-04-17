@@ -69,8 +69,12 @@ const runSolrQuery = (solrQuery, callback) => {
             console.log(error);
             callback(new ResponseError(statusCodes.INTERNAL_SERVER_ERROR, 'Solr client errored'), null);
         } else {
-            const data = await buildData(object);
-            callback(null, data);
+            try {
+                const data = await buildData(object);
+                callback(null, data);
+            } catch (error) {
+                callback(error, null);
+            }
         }
     });
 }
