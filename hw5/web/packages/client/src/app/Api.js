@@ -26,7 +26,7 @@ const buildApiError = (error) => {
   }
 };
 
-export const search = async (query, type) => {
+const search = async (query, type) => {
   try {
     const response = await getInstance().get("/search", {
       params: {
@@ -41,7 +41,7 @@ export const search = async (query, type) => {
   }
 };
 
-export const suggest = async (query, type) => {
+const suggest = async (query, type) => {
   try {
     const response = await getInstance().get("/suggest", {
       params: {

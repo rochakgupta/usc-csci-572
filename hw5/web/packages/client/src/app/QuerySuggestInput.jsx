@@ -1,6 +1,6 @@
 import { useState } from "react";
 import AsyncSelect from "react-select/async";
-import { Api } from "../api";
+import { Api } from "./Api";
 
 const widthFromProp = (base, { selectProps: { width } }) => ({
   ...base,

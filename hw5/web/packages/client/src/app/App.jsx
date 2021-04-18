@@ -1,15 +1,12 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 
-import { css, jsx } from "@emotion/react";
+import { jsx } from "@emotion/react";
 import React, { useReducer } from "react";
-import { Api, ApiStatus } from "./api";
-import {
-  Message,
-  QuerySuggestInput,
-  QueryTypeRadioInput,
-  SearchResult
-} from "./components";
+import { Api, ApiStatus } from "./Api";
+import SearchError from "./SearchError";
+import SearchForm from "./SearchForm";
+import SearchResult from "./SearchResult";
 
 const initialState = {
   query: "",
@@ -93,53 +90,15 @@ const App = () => {
 
   return (
     <React.Fragment>
-      <div
-        css={css`
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          & > * {
-            margin-top: 20px;
-          }
-        `}
-      >
-        <div>Search</div>
-        <QuerySuggestInput
-          width="200px"
-          value={query}
-          onChange={handleQueryChange}
-        />
-        <div
-          css={css`
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-          `}
-        >
-          {[
-            {
-              value: "lucene",
-              label: "Lucene"
-            },
-            {
-              value: "pagerank",
-              label: "Page Rank"
-            }
-          ].map((QueryType, index) => (
-            <QueryTypeRadioInput
-              key={index}
-              {...QueryType}
-              selectedValue={queryType}
-              onSelect={handleQueryTypeSelect}
-              marginLeft={index > 0}
-            />
-          ))}
-        </div>
-        <button onClick={handleSubmit} disabled={isSubmitDisabled}>
-          Submit
-        </button>
-      </div>
-      {searchStatus === ApiStatus.ERROR && <Message text={searchError} />}
+      <SearchForm
+        query={query}
+        queryType={queryType}
+        onQueryChange={handleQueryChange}
+        onQueryTypeSelect={handleQueryTypeSelect}
+        isSubmitDisabled={isSubmitDisabled}
+        onSubmit={handleSubmit}
+      />
+      {searchStatus === ApiStatus.ERROR && <SearchError text={searchError} />}
       {searchStatus === ApiStatus.SUCCESS && <SearchResult {...searchResult} />}
     </React.Fragment>
   );
