@@ -34,6 +34,11 @@ const parseDocument = async ({ id, og_description: description, og_url: url, tit
     };
 };
 
+const parseSuggestion = ({ term }) => {
+    return parseValue(term);
+};
+
 module.exports = {
-    parseDocument
+    parseDocument,
+    parseSuggestion
 };

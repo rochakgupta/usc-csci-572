@@ -45,19 +45,19 @@ const getInstance = () => {
 
 const limit = 10;
 
-const buildSearchData = async (data) => {
+const buildSearchResult = async (data) => {
     const {
-        response: { numFound: total, docs }
+        response: { numFound: total, docs: documents }
     } = data;
 
     const start = Math.min(1, total);
     const end = Math.min(limit, total);
 
-    const documents = [];
-    for (let doc of docs) {
-        document = await parser.parseDocument(doc);
-        documents.push(document);
-    }
+    await Promise.all(
+        documents.map(async (document, index) => {
+            documents[index] = await parser.parseDocument(document);
+        })
+    );
 
     return {
         start,
@@ -90,8 +90,40 @@ const search = async (query, type) => {
                 })
             }
         });
-        const data = await buildSearchData(response.data);
-        return data;
+        const searchResult = await buildSearchResult(response.data);
+        return searchResult;
+    } catch (error) {
+        console.log(error);
+        throw buildError(error);
+    }
+};
+
+const buildSuggestions = async (query, data) => {
+    const {
+        suggest: {
+            suggest: {
+                [query]: { suggestions }
+            }
+        }
+    } = data;
+
+    suggestions.forEach((suggestion, index) => {
+        suggestions[index] = parser.parseSuggestion(suggestion);
+    });
+
+    return suggestions;
+};
+
+const suggest = async (query) => {
+    query = query.toLowerCase();
+    try {
+        const response = await getInstance().get("/suggest", {
+            params: {
+                q: query
+            }
+        });
+        const suggestions = await buildSuggestions(query, response.data);
+        return suggestions;
     } catch (error) {
         console.log(error);
         throw buildError(error);
@@ -99,5 +131,6 @@ const search = async (query, type) => {
 };
 
 module.exports = {
-    search
+    search,
+    suggest
 };
