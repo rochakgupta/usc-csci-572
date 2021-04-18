@@ -3,7 +3,13 @@
 
 import { css, jsx } from "@emotion/react";
 
-const RadioInput = ({ value, label, selectedValue, onSelect, marginLeft }) => (
+const QueryTypeRadioInput = ({
+  value,
+  label,
+  selectedValue,
+  onSelect,
+  marginLeft
+}) => (
   <span
     {...(marginLeft && {
       css: css`
@@ -23,4 +29,4 @@ const RadioInput = ({ value, label, selectedValue, onSelect, marginLeft }) => (
   </span>
 );
 
-export default RadioInput;
+export default QueryTypeRadioInput;

@@ -41,8 +41,24 @@ export const search = async (query, type) => {
   }
 };
 
+export const suggest = async (query, type) => {
+  try {
+    const response = await getInstance().get("/suggest", {
+      params: {
+        query,
+        type
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    throw buildApiError(error);
+  }
+};
+
 export const Api = {
-  search
+  search,
+  suggest
 };
 
 export const ApiStatus = {

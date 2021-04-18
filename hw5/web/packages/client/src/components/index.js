@@ -1,4 +1,4 @@
 export { default as Message } from "./Message";
-export { default as RadioInput } from "./RadioInput";
+export { default as QuerySuggestInput } from "./QuerySuggestInput";
+export { default as QueryTypeRadioInput } from "./QueryTypeRadioInput";
 export { default as SearchResult } from "./SearchResult";
-export { default as TextInput } from "./TextInput";

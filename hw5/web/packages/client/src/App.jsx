@@ -4,7 +4,12 @@
 import { css, jsx } from "@emotion/react";
 import React, { useReducer } from "react";
 import { Api, ApiStatus } from "./api";
-import { Message, RadioInput, SearchResult, TextInput } from "./components";
+import {
+  Message,
+  QuerySuggestInput,
+  QueryTypeRadioInput,
+  SearchResult
+} from "./components";
 
 const initialState = {
   query: "",
@@ -67,24 +72,24 @@ const App = () => {
   };
 
   const handleSubmit = async () => {
-    if (query.length > 0 && queryType) {
+    dispatch({
+      type: "SEARCH_START"
+    });
+    try {
+      const result = await Api.search(query, queryType);
       dispatch({
-        type: "SEARCH_START"
+        type: "SEARCH_SUCCESS",
+        searchResult: result
       });
-      try {
-        const result = await Api.search(query, queryType);
-        dispatch({
-          type: "SEARCH_SUCCESS",
-          searchResult: result
-        });
-      } catch (error) {
-        dispatch({
-          type: "SEARCH_ERROR",
-          searchError: error.message
-        });
-      }
+    } catch (error) {
+      dispatch({
+        type: "SEARCH_ERROR",
+        searchError: error.message
+      });
     }
   };
+
+  const isSubmitDisabled = !(query && query.length > 0 && queryType);
 
   return (
     <React.Fragment>
@@ -93,40 +98,55 @@ const App = () => {
           display: flex;
           flex-direction: column;
           align-items: center;
-          & > * {
-            margin-top: 20px;
-          }
         `}
       >
-        <div>Search</div>
-        <TextInput value={query} onChange={handleQueryChange} />
         <div
           css={css`
             display: flex;
-            flex-direction: row;
-            justify-content: space-between;
+            flex-direction: column;
+            align-items: center;
+            width: 200px;
+            & > * {
+              margin-top: 20px;
+            }
           `}
         >
-          {[
-            {
-              value: "lucene",
-              label: "Lucene"
-            },
-            {
-              value: "pagerank",
-              label: "Page Rank"
-            }
-          ].map((QueryType, index) => (
-            <RadioInput
-              key={index}
-              {...QueryType}
-              selectedValue={queryType}
-              onSelect={handleQueryTypeSelect}
-              marginLeft={index > 0}
-            />
-          ))}
+          <div>Search</div>
+          <QuerySuggestInput
+            width="200px"
+            value={query}
+            onChange={handleQueryChange}
+          />
+          <div
+            css={css`
+              display: flex;
+              flex-direction: row;
+              justify-content: space-between;
+            `}
+          >
+            {[
+              {
+                value: "lucene",
+                label: "Lucene"
+              },
+              {
+                value: "pagerank",
+                label: "Page Rank"
+              }
+            ].map((QueryType, index) => (
+              <QueryTypeRadioInput
+                key={index}
+                {...QueryType}
+                selectedValue={queryType}
+                onSelect={handleQueryTypeSelect}
+                marginLeft={index > 0}
+              />
+            ))}
+          </div>
+          <button onClick={handleSubmit} disabled={isSubmitDisabled}>
+            Submit
+          </button>
         </div>
-        <button onClick={handleSubmit}>Submit</button>
       </div>
       {searchStatus === ApiStatus.ERROR && <Message text={searchError} />}
       {searchStatus === ApiStatus.SUCCESS && <SearchResult {...searchResult} />}
