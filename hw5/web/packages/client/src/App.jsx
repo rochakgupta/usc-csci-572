@@ -98,55 +98,46 @@ const App = () => {
           display: flex;
           flex-direction: column;
           align-items: center;
+          & > * {
+            margin-top: 20px;
+          }
         `}
       >
+        <div>Search</div>
+        <QuerySuggestInput
+          width="200px"
+          value={query}
+          onChange={handleQueryChange}
+        />
         <div
           css={css`
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 200px;
-            & > * {
-              margin-top: 20px;
-            }
+            flex-direction: row;
+            justify-content: space-between;
           `}
         >
-          <div>Search</div>
-          <QuerySuggestInput
-            width="200px"
-            value={query}
-            onChange={handleQueryChange}
-          />
-          <div
-            css={css`
-              display: flex;
-              flex-direction: row;
-              justify-content: space-between;
-            `}
-          >
-            {[
-              {
-                value: "lucene",
-                label: "Lucene"
-              },
-              {
-                value: "pagerank",
-                label: "Page Rank"
-              }
-            ].map((QueryType, index) => (
-              <QueryTypeRadioInput
-                key={index}
-                {...QueryType}
-                selectedValue={queryType}
-                onSelect={handleQueryTypeSelect}
-                marginLeft={index > 0}
-              />
-            ))}
-          </div>
-          <button onClick={handleSubmit} disabled={isSubmitDisabled}>
-            Submit
-          </button>
+          {[
+            {
+              value: "lucene",
+              label: "Lucene"
+            },
+            {
+              value: "pagerank",
+              label: "Page Rank"
+            }
+          ].map((QueryType, index) => (
+            <QueryTypeRadioInput
+              key={index}
+              {...QueryType}
+              selectedValue={queryType}
+              onSelect={handleQueryTypeSelect}
+              marginLeft={index > 0}
+            />
+          ))}
         </div>
+        <button onClick={handleSubmit} disabled={isSubmitDisabled}>
+          Submit
+        </button>
       </div>
       {searchStatus === ApiStatus.ERROR && <Message text={searchError} />}
       {searchStatus === ApiStatus.SUCCESS && <SearchResult {...searchResult} />}
