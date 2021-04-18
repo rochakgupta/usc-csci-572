@@ -2,24 +2,21 @@ import { useState } from "react";
 import AsyncSelect from "react-select/async";
 import { Api } from "../api";
 
+const widthFromProp = (base, { selectProps: { width } }) => ({
+  ...base,
+  width
+});
+
+const displayNone = () => ({
+  display: "none"
+});
+
 const stylesOptions = {
-  menu: (base, { selectProps: { width } }) => ({
-    ...base,
-    width
-  }),
-  container: (base, { selectProps: { width } }) => ({
-    ...base,
-    width
-  }),
-  dropdownIndicator: () => ({
-    display: "none"
-  }),
-  indicatorSeparator: () => ({
-    display: "none"
-  }),
-  placeholder: () => ({
-    display: "none"
-  })
+  menu: widthFromProp,
+  container: widthFromProp,
+  dropdownIndicator: displayNone,
+  indicatorSeparator: displayNone,
+  placeholder: () => displayNone
 };
 
 const buildOption = (suggestion) => ({
