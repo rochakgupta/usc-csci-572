@@ -41,10 +41,3 @@ export const search = async (query, type) => {
     }
 };
 
-export const Status = {
-    INITIAL: 'INITIAL',
-    LOADING: 'LOADING',
-    SUCCESS: 'SUCCESS',
-    ERROR: 'ERROR',
-};
-

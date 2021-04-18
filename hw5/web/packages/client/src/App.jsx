@@ -74,10 +74,17 @@ const SearchResult = ({ start, end, total, documents }) => {
   );
 };
 
+const ApiStatus = {
+  INITIAL: 'INITIAL',
+  LOADING: 'LOADING',
+  SUCCESS: 'SUCCESS',
+  ERROR: 'ERROR',
+};
+
 const initialState = {
   query: '',
   queryType: null,
-  searchStatus: Api.Status.INITIAL,
+  searchStatus: ApiStatus.INITIAL,
   searchResults: null,
   searchError: null,
 };
@@ -97,18 +104,18 @@ const reducer = (state, action) => {
     case 'SEARCH_START':
       return {
         ...state,
-        searchStatus: Api.Status.LOADING,
+        searchStatus: ApiStatus.LOADING,
       };
     case 'SEARCH_SUCCESS':
       return {
         ...state,
-        searchStatus: Api.Status.SUCCESS,
+        searchStatus: ApiStatus.SUCCESS,
         searchResults: action.searchResults,
       };
     case 'SEARCH_ERROR':
       return {
         ...state,
-        searchStatus: Api.Status.ERROR,
+        searchStatus: ApiStatus.ERROR,
         searchError: action.searchError,
       };
     default:
@@ -208,8 +215,8 @@ const App = () => {
           }
         `}
       >
-        {searchStatus === Api.Status.ERROR && searchError}
-        {searchStatus === Api.Status.SUCCESS && (
+        {searchStatus === ApiStatus.ERROR && searchError}
+        {searchStatus === ApiStatus.SUCCESS && (
           <SearchResult {...searchResults} />
         )}
       </div>
