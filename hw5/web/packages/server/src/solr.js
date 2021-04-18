@@ -98,7 +98,7 @@ const search = async (query, type) => {
     }
 };
 
-const buildSuggestions = async (query, data) => {
+const buildSuggestions = (query, data) => {
     const {
         suggest: {
             suggest: {
@@ -122,7 +122,7 @@ const suggest = async (query) => {
                 q: query
             }
         });
-        const suggestions = await buildSuggestions(query, response.data);
+        const suggestions = buildSuggestions(query, response.data);
         return suggestions;
     } catch (error) {
         console.log(error);
