@@ -36,7 +36,7 @@ const getUrlByFilepath = async (filepath) => {
             filepathToUrlData = await buildFilepathToUrlData();
         } catch (error) {
             console.log(error);
-            throw new response.InternalServerError("Server errored while reading file to url csv");
+            throw response.buildInternalServerError("Server errored while reading file to url csv");
         }
     }
     return filepathToUrlData[filepath];

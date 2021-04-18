@@ -10,12 +10,13 @@
   "author": "Rochak Gupta <rochak84@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "axios": "^0.21.1",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-winston": "^4.1.0",
     "fast-csv": "^4.3.6",
+    "http-status-codes": "^2.1.4",
     "nodemon": "2.0.6",
-    "solr-client": "^0.8.0",
     "winston": "^3.3.3"
   }
 }

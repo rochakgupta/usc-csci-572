@@ -3,18 +3,17 @@ const solr = require("./solr");
 
 const api = express.Router();
 
-api.get("/search", (req, res) => {
+api.get("/search", async (req, res) => {
     const { query, type } = req.query;
-    solr.search(query, type, (error, data) => {
-        if (error) {
-            const { statusCode, message } = error;
-            res.status(statusCode).json({
-                message
-            });
-        } else {
-            res.json(data);
-        }
-    });
+    try {
+        const data = await solr.search(query, type);
+        res.json(data);
+    } catch (error) {
+        const { statusCode, message } = error;
+        res.status(statusCode).json({
+            message
+        });
+    }
 });
 
 module.exports = api;

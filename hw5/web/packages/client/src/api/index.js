@@ -20,7 +20,7 @@ class ApiError extends Error {}
 
 const buildApiError = (error) => {
   if (error.response) {
-    return new ApiError(httpStatusCodes.getReasonPhrase(error.response.status));
+    return new ApiError(httpStatusCodes.getStatusText(error.response.status));
   } else {
     return new ApiError("Client or network errored");
   }

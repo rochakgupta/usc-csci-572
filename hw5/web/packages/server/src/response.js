@@ -1,7 +1,4 @@
-const statusCodes = {
-    BAD_REQUEST: 400,
-    INTERNAL_SERVER_ERROR: 500
-};
+const httpStatusCodes = require("http-status-codes");
 
 class ResponseError extends Error {
     constructor(statusCode, message) {
@@ -10,19 +7,23 @@ class ResponseError extends Error {
     }
 }
 
-class BadRequestError extends ResponseError {
-    constructor(message) {
-        super(statusCodes.BAD_REQUEST, message);
-    }
-}
+const buildBadRequestError = (message) => {
+    return buildError(httpStatusCodes.StatusCodes.BAD_REQUEST, message);
+};
 
-class InternalServerError extends ResponseError {
-    constructor(message) {
-        super(statusCodes.INTERNAL_SERVER_ERROR, message);
+const buildInternalServerError = (message) => {
+    return buildError(httpStatusCodes.StatusCodes.INTERNAL_SERVER_ERROR, message);
+};
+
+const buildError = (statusCode, message) => {
+    if (!message) {
+        message = httpStatusCodes.getStatusText(statusCode);
     }
-}
+    return new ResponseError(statusCode, message);
+};
 
 module.exports = {
-    BadRequestError,
-    InternalServerError
+    buildBadRequestError,
+    buildInternalServerError,
+    buildError
 };
