@@ -1,4 +1,4 @@
-const isNonEmptyString = (value) => typeof value === 'string' && value.length > 0;
+const isNonEmptyString = (value) => typeof value === "string" && value.length > 0;
 
 const isNonEmptyStringArray = (value) =>
     Array.isArray(value) && value.length > 0 && value.every((entry) => isNonEmptyString(entry));
@@ -9,4 +9,4 @@ module.exports = {
     isNonEmptyString,
     isNonEmptyStringArray,
     isValue
-}
+};

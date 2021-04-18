@@ -1,7 +1,7 @@
-const validator = require('./validator');
-const data = require('./data');
+const validator = require("./validator");
+const data = require("./data");
 
-const defaultValue = 'N/A';
+const defaultValue = "N/A";
 
 const parseValue = (value) => {
     if (validator.isNonEmptyString(value)) {
@@ -11,14 +11,9 @@ const parseValue = (value) => {
         return value[0];
     }
     return defaultValue;
-}
+};
 
-const parseDocument = async ({
-    id,
-    og_description: description,
-    og_url: url,
-    title
-}) => {
+const parseDocument = async ({ id, og_description: description, og_url: url, title }) => {
     if (validator.isValue(id)) {
         id = parseValue(id);
         if (!validator.isValue(url)) {
@@ -36,9 +31,9 @@ const parseDocument = async ({
         url,
         description,
         title
-    }
-}
+    };
+};
 
 module.exports = {
     parseDocument
-}
+};

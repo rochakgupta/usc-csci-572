@@ -1,7 +1,7 @@
 const statusCodes = {
     BAD_REQUEST: 400,
     INTERNAL_SERVER_ERROR: 500
-}
+};
 
 class ResponseError extends Error {
     constructor(statusCode, message) {
@@ -25,4 +25,4 @@ class InternalServerError extends ResponseError {
 module.exports = {
     BadRequestError,
     InternalServerError
-}
+};

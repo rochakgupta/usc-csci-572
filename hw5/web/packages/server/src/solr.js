@@ -1,13 +1,10 @@
-const solr = require('solr-client');
-const parser = require('./parser');
-const response = require('./response');
+const solr = require("solr-client");
+const parser = require("./parser");
+const response = require("./response");
 
 const buildData = async (object) => {
     const {
-        response: {
-            numFound: total,
-            docs: documents
-        }
+        response: { numFound: total, docs: documents }
     } = object;
 
     const start = Math.min(1, total);
@@ -24,50 +21,43 @@ const buildData = async (object) => {
         end,
         total,
         documents
-    }
-}
+    };
+};
 
 let client = null;
 
 const getClient = () => {
     if (!client) {
         client = solr.createClient({
-            core: 'myexample'
+            core: "myexample"
         });
     }
     return client;
-}
+};
 
 const limit = 10;
 
 const buildSolrQuery = (query, type, callback) => {
     let solrQuery;
     switch (type) {
-        case 'lucene':
-            solrQuery = getClient().createQuery()
-                .q(query)
-                .start(0)
-                .rows(limit);
+        case "lucene":
+            solrQuery = getClient().createQuery().q(query).start(0).rows(limit);
             break;
-        case 'pagerank':
-            solrQuery = getClient().createQuery()
-                .q(query)
-                .sort({ pageRankFile: 'desc' })
-                .start(0)
-                .rows(limit);
+        case "pagerank":
+            solrQuery = getClient().createQuery().q(query).sort({ pageRankFile: "desc" }).start(0).rows(limit);
             break;
         default:
-            callback(new response.BadRequestError('Invalid query type'), null);
+            callback(new response.BadRequestError("Invalid query type"), null);
             return;
     }
     callback(null, solrQuery);
-}
+};
 
 const runSolrQuery = (solrQuery, callback) => {
     getClient().search(solrQuery, async (error, object) => {
         if (error) {
             console.log(error);
-            callback(new response.InternalServerError('Solr client errored'), null);
+            callback(new response.InternalServerError("Solr client errored"), null);
         } else {
             try {
                 const data = await buildData(object);
@@ -77,7 +67,7 @@ const runSolrQuery = (solrQuery, callback) => {
             }
         }
     });
-}
+};
 
 const search = async (query, type, callback) => {
     buildSolrQuery(query, type, (error, solrQuery) => {
@@ -88,7 +78,7 @@ const search = async (query, type, callback) => {
             runSolrQuery(solrQuery, callback);
         }
     });
-}
+};
 
 module.exports = {
     search
