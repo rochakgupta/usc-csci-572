@@ -1,0 +1,21 @@
+{
+  "name": "web",
+  "private": true,
+  "description": "Web",
+  "author": "Rochak Gupta <rochak84@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "postinstall": "lerna bootstrap",
+    "watch:client": "lerna run --scope @web/client --stream --no-prefix watch",
+    "watch:server": "lerna run --scope @web/server --stream --no-prefix watch",
+    "build:client": "lerna run --scope @web/client --stream build",
+    "clean": "lerna run --parallel --stream clean",
+    "start:server": "lerna run --scope @web/server --stream start",
+    "start": "run-s build:client start:server"
+  },
+  "dependencies": {
+    "lerna": "^4.0.0",
+    "npm-run-all": "^4.1.5",
+    "rimraf": "^3.0.2"
+  }
+}

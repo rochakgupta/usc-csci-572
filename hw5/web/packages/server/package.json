@@ -1,0 +1,21 @@
+{
+  "name": "@web/server",
+  "version": "1.0.0",
+  "description": "Server",
+  "main": "server.js",
+  "scripts": {
+    "watch": "nodemon --watch src src/server.js",
+    "start": "node src/server.js"
+  },
+  "author": "Rochak Gupta <rochak84@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "express-winston": "^4.1.0",
+    "fast-csv": "^4.3.6",
+    "nodemon": "2.0.6",
+    "solr-client": "^0.8.0",
+    "winston": "^3.3.3"
+  }
+}
