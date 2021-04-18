@@ -37,12 +37,14 @@ const reducer = (state, action) => {
       return {
         ...state,
         searchStatus: ApiStatus.SUCCESS,
-        searchResult: action.searchResult
+        searchResult: action.searchResult,
+        searchError: null
       };
     case "SEARCH_ERROR":
       return {
         ...state,
         searchStatus: ApiStatus.ERROR,
+        searchResult: null,
         searchError: action.searchError
       };
     default:
