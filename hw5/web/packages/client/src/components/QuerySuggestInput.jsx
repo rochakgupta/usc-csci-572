@@ -7,7 +7,8 @@ const widthFromProp = (base, { selectProps: { width } }) => ({
   width
 });
 
-const displayNone = () => ({
+const displayNone = (base) => ({
+  ...base,
   display: "none"
 });
 
