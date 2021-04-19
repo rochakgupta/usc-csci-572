@@ -22,7 +22,7 @@ const SearchForm = ({
       }
     `}
   >
-    <div>Search</div>
+    <div>Enhanced Search</div>
     <QuerySuggestInput width="200px" value={query} onChange={onQueryChange} />
     <div
       css={css`
