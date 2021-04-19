@@ -2,7 +2,28 @@
 
 import { css } from "@emotion/react";
 
-const SearchResult = ({ start, end, total, documents }) => {
+const SearchResult = ({
+  query,
+  start,
+  end,
+  total,
+  documents,
+  alternate,
+  onAlternateSearch
+}) => {
+  const Alternate = () => (
+    <i
+      css={css`
+        color: blue;
+        text-decoration: underline;
+        cursor: pointer;
+      `}
+      onClick={() => onAlternateSearch(alternate)}
+    >
+      {alternate}
+    </i>
+  );
+
   const Document = ({ id, url, title, description }) => {
     const Link = ({ text }) => (
       <a target="_blank" rel="noreferrer" href={url}>
@@ -36,9 +57,16 @@ const SearchResult = ({ start, end, total, documents }) => {
         }
       `}
     >
-      <div>
-        Results {start} - {end} of {total}:
-      </div>
+      {!alternate && (
+        <div>
+          Results {start} - {end} of {total}:
+        </div>
+      )}
+      {alternate && (
+        <div>
+          Got no results for <i>{query}</i>. Did you mean <Alternate />?
+        </div>
+      )}
       {documents.map((document, index) => (
         <Document key={index} {...document} />
       ))}

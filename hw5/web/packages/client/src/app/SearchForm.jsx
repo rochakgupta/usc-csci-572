@@ -7,10 +7,10 @@ import QueryTypeRadioInput from "./QueryTypeRadioInput";
 const SearchForm = ({
   query,
   queryType,
-  isSubmitDisabled,
   onQueryChange,
   onQueryTypeSelect,
-  onSubmit
+  isSearchDisabled,
+  onSearch
 }) => (
   <div
     css={css`
@@ -50,7 +50,7 @@ const SearchForm = ({
         />
       ))}
     </div>
-    <button onClick={onSubmit} disabled={isSubmitDisabled}>
+    <button onClick={onSearch} disabled={isSearchDisabled}>
       Submit
     </button>
   </div>

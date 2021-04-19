@@ -1,7 +1,7 @@
 import React, { useReducer } from "react";
 import { Api, ApiStatus } from "./Api";
-import SearchError from "./SearchError";
 import SearchForm from "./SearchForm";
+import SearchMessage from "./SearchMessage";
 import SearchResult from "./SearchResult";
 
 const initialState = {
@@ -66,15 +66,15 @@ const App = () => {
     });
   };
 
-  const handleSubmit = async () => {
+  const search = async (q = query) => {
     dispatch({
       type: "SEARCH_START"
     });
     try {
-      const result = await Api.search(query, queryType);
+      const searchResult = await Api.search(q, queryType);
       dispatch({
         type: "SEARCH_SUCCESS",
-        searchResult: result
+        searchResult
       });
     } catch (error) {
       dispatch({
@@ -84,7 +84,11 @@ const App = () => {
     }
   };
 
-  const isSubmitDisabled = !(query && query.length > 0 && queryType);
+  const handleSearch = async () => await search();
+
+  const handleAlternateSearch = async (alternate) => await search(alternate);
+
+  const isSearchDisabled = !(query && query.length > 0 && queryType);
 
   return (
     <React.Fragment>
@@ -93,11 +97,19 @@ const App = () => {
         queryType={queryType}
         onQueryChange={handleQueryChange}
         onQueryTypeSelect={handleQueryTypeSelect}
-        isSubmitDisabled={isSubmitDisabled}
-        onSubmit={handleSubmit}
+        isSearchDisabled={isSearchDisabled}
+        onSearch={handleSearch}
       />
-      {searchStatus === ApiStatus.ERROR && <SearchError text={searchError} />}
-      {searchStatus === ApiStatus.SUCCESS && <SearchResult {...searchResult} />}
+      {searchStatus === ApiStatus.LOADING && (
+        <SearchMessage text="Searching..." />
+      )}
+      {searchStatus === ApiStatus.ERROR && <SearchMessage text={searchError} />}
+      {searchStatus === ApiStatus.SUCCESS && (
+        <SearchResult
+          {...searchResult}
+          onAlternateSearch={handleAlternateSearch}
+        />
+      )}
     </React.Fragment>
   );
 };

@@ -1,4 +1,5 @@
 const axios = require("axios");
+const spelling = require("./spelling");
 const response = require("./response");
 const parser = require("./parser");
 
@@ -29,23 +30,13 @@ const getInstance = () => {
                 return Promise.reject(error);
             }
         );
-        // instance.interceptors.response.use(
-        //     (response) => {
-        //         console.info(`Solr Response: ${JSON.stringify(response.data, undefined, 2)}`);
-        //         return response;
-        //     },
-        //     (error) => {
-        //         console.info(`Solr Response: ${error}`);
-        //         return Promise.reject(error);
-        //     }
-        // );
     }
     return instance;
 };
 
 const limit = 10;
 
-const buildSearchResult = async (data) => {
+const buildSearchResult = async (query, data) => {
     const {
         response: { numFound: total, docs: documents }
     } = data;
@@ -59,11 +50,22 @@ const buildSearchResult = async (data) => {
         })
     );
 
+    let alternate = null;
+
+    if (total === 0) {
+        const corrected = spelling.correct(query);
+        if (corrected !== query) {
+            alternate = corrected;
+        }
+    }
+
     return {
+        query,
         start,
         end,
         total,
-        documents
+        documents,
+        alternate
     };
 };
 
@@ -90,7 +92,7 @@ const search = async (query, type) => {
                 })
             }
         });
-        const searchResult = await buildSearchResult(response.data);
+        const searchResult = await buildSearchResult(query, response.data);
         return searchResult;
     } catch (error) {
         console.log(error);

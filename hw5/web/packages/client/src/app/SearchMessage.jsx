@@ -2,7 +2,7 @@
 
 import { css } from "@emotion/react";
 
-const SearchError = ({ text }) => (
+const SearchMessage = ({ text }) => (
   <div
     css={css`
       margin-top: 20px;
@@ -12,4 +12,4 @@ const SearchError = ({ text }) => (
   </div>
 );
 
-export default SearchError;
+export default SearchMessage;
