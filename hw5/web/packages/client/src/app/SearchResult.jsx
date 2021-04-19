@@ -1,7 +1,6 @@
-/** @jsxRuntime classic */
-/** @jsx jsx */
+/** @jsxImportSource @emotion/react */
 
-import { css, jsx } from "@emotion/react";
+import { css } from "@emotion/react";
 
 const SearchResult = ({ start, end, total, documents }) => {
   const Document = ({ id, url, title, description }) => {

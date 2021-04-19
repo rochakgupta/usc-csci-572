@@ -1,7 +1,6 @@
-/** @jsxRuntime classic */
-/** @jsx jsx */
+/** @jsxImportSource @emotion/react */
 
-import { css, jsx } from "@emotion/react";
+import { css } from "@emotion/react";
 import QuerySuggestInput from "./QuerySuggestInput";
 import QueryTypeRadioInput from "./QueryTypeRadioInput";
 

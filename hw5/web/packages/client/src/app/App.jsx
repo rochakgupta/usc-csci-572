@@ -1,7 +1,3 @@
-/** @jsxRuntime classic */
-/** @jsx jsx */
-
-import { jsx } from "@emotion/react";
 import React, { useReducer } from "react";
 import { Api, ApiStatus } from "./Api";
 import SearchError from "./SearchError";
