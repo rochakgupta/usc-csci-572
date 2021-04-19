@@ -111,12 +111,10 @@ const QuerySuggestInput = ({
   };
 
   const noOptionsMessage = () => {
-    switch (suggestStatus) {
-      case ApiStatus.ERROR:
-        return suggestError;
-      default:
-        return "No Suggestions";
+    if (suggestStatus === ApiStatus.ERROR) {
+      return suggestError;
     }
+    return "No Suggestions";
   };
 
   return (

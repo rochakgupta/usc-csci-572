@@ -52,17 +52,17 @@ const App = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const { query, queryType, searchStatus, searchResult, searchError } = state;
 
-  const handleQueryChange = (newQuery) => {
+  const handleQueryChange = (query) => {
     dispatch({
       type: "QUERY_CHANGE",
-      query: newQuery
+      query
     });
   };
 
-  const handleQueryTypeSelect = (newQueryType) => {
+  const handleQueryTypeSelect = (queryType) => {
     dispatch({
       type: "QUERY_TYPE_SELECT",
-      queryType: newQueryType
+      queryType
     });
   };
 
