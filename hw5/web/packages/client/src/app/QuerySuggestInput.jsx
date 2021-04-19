@@ -16,6 +16,7 @@ const stylesOptions = {
   menu: widthFromProp,
   container: widthFromProp,
   dropdownIndicator: displayNone,
+  loadingIndicator: displayNone,
   indicatorSeparator: displayNone,
   placeholder: displayNone
 };

@@ -38,11 +38,7 @@ const SearchResult = ({
     );
 
     return (
-      <div
-        css={css`
-          margin-left: 20px;
-        `}
-      >
+      <div>
         <div>
           Title: <Link text={title} />
         </div>
@@ -61,6 +57,9 @@ const SearchResult = ({
         & > div {
           margin-bottom: 20px;
         }
+        & > div:not(:first-of-type) {
+          margin-left: 20px;
+        }
       `}
     >
       {!alternate && (
@@ -74,7 +73,9 @@ const SearchResult = ({
         </div>
       )}
       {documents.map((document, index) => (
-        <Document key={index} {...document} />
+        <div key={index}>
+          <Document {...document} />
+        </div>
       ))}
     </div>
   );
