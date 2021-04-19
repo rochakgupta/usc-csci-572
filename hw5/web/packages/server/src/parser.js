@@ -1,5 +1,5 @@
 const validator = require("./validator");
-const data = require("./data");
+const mapping = require("./mapping");
 
 const defaultValue = "N/A";
 
@@ -17,7 +17,7 @@ const parseDocument = async ({ id, og_description: description, og_url: url, tit
     if (validator.isValue(id)) {
         id = parseValue(id);
         if (!validator.isValue(url)) {
-            url = await data.getUrlByFilepath(id);
+            url = await mapping.getUrlByFilepath(id);
         }
         url = parseValue(url);
     } else {

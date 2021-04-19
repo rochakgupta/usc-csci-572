@@ -1,31 +1,21 @@
-/** @jsxImportSource @emotion/react */
+const QueryTypeRadioInput = ({ value, label, selectedValue, onSelect }) => {
+  const handleChange = (e) => {
+    onSelect(e.target.value);
+  };
 
-import { css } from "@emotion/react";
-
-const QueryTypeRadioInput = ({
-  value,
-  label,
-  selectedValue,
-  onSelect,
-  marginLeft
-}) => (
-  <span
-    {...(marginLeft && {
-      css: css`
-        margin-left: 10px;
-      `
-    })}
-  >
-    <input
-      type="radio"
-      id="radio"
-      name="radio"
-      value={value}
-      checked={selectedValue === value}
-      onChange={(e) => onSelect(e.target.value)}
-    />
-    <label htmlFor="radio">{label}</label>
-  </span>
-);
+  return (
+    <span>
+      <input
+        type="radio"
+        id="radio"
+        name="radio"
+        value={value}
+        checked={selectedValue === value}
+        onChange={handleChange}
+      />
+      <label htmlFor="radio">{label}</label>
+    </span>
+  );
+};
 
 export default QueryTypeRadioInput;

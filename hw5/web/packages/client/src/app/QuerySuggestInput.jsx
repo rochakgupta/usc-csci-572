@@ -17,7 +17,7 @@ const stylesOptions = {
   container: widthFromProp,
   dropdownIndicator: displayNone,
   indicatorSeparator: displayNone,
-  placeholder: () => displayNone
+  placeholder: displayNone
 };
 
 const buildOption = (suggestion) => ({
@@ -61,7 +61,7 @@ const reducer = (state, action) => {
 };
 
 const QuerySuggestInput = ({
-  width = "200px",
+  width,
   value: inputValue,
   onChange: onInputChange
 }) => {

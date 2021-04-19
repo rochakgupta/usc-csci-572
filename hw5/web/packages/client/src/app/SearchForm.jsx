@@ -17,18 +17,26 @@ const SearchForm = ({
       display: flex;
       flex-direction: column;
       align-items: center;
-      & > * {
+      & > div:first-of-type {
         margin-top: 20px;
+      }
+      & > div:not(:last-of-type) {
+        margin-bottom: 20px;
       }
     `}
   >
     <div>Enhanced Search</div>
-    <QuerySuggestInput width="200px" value={query} onChange={onQueryChange} />
+    <div>
+      <QuerySuggestInput width="200px" value={query} onChange={onQueryChange} />
+    </div>
     <div
       css={css`
         display: flex;
         flex-direction: row;
         justify-content: space-between;
+        & > div:not(:last-of-type) {
+          margin-right: 20px;
+        }
       `}
     >
       {[
@@ -41,18 +49,20 @@ const SearchForm = ({
           label: "Page Rank"
         }
       ].map((QueryType, index) => (
-        <QueryTypeRadioInput
-          key={index}
-          {...QueryType}
-          selectedValue={queryType}
-          onSelect={onQueryTypeSelect}
-          marginLeft={index > 0}
-        />
+        <div key={index}>
+          <QueryTypeRadioInput
+            {...QueryType}
+            selectedValue={queryType}
+            onSelect={onQueryTypeSelect}
+          />
+        </div>
       ))}
     </div>
-    <button onClick={onSearch} disabled={isSearchDisabled}>
-      Submit
-    </button>
+    <div>
+      <button onClick={onSearch} disabled={isSearchDisabled}>
+        Submit
+      </button>
+    </div>
   </div>
 );
 

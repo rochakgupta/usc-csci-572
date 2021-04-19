@@ -1,7 +1,9 @@
-import React, { useReducer } from "react";
+/** @jsxImportSource @emotion/react */
+
+import { css } from "@emotion/react";
+import { useReducer } from "react";
 import { Api, ApiStatus } from "./Api";
 import SearchForm from "./SearchForm";
-import SearchMessage from "./SearchMessage";
 import SearchResult from "./SearchResult";
 
 const initialState = {
@@ -84,33 +86,45 @@ const App = () => {
     }
   };
 
-  const handleSearch = async () => await search();
+  const handleSearch = async () => {
+    await search();
+  };
 
-  const handleAlternateSearch = async (alternate) => await search(alternate);
+  const handleAlternateSearch = async (alternate) => {
+    await search(alternate);
+  };
 
   const isSearchDisabled = !(query && query.length > 0 && queryType);
 
   return (
-    <React.Fragment>
-      <SearchForm
-        query={query}
-        queryType={queryType}
-        onQueryChange={handleQueryChange}
-        onQueryTypeSelect={handleQueryTypeSelect}
-        isSearchDisabled={isSearchDisabled}
-        onSearch={handleSearch}
-      />
-      {searchStatus === ApiStatus.LOADING && (
-        <SearchMessage text="Searching..." />
-      )}
-      {searchStatus === ApiStatus.ERROR && <SearchMessage text={searchError} />}
-      {searchStatus === ApiStatus.SUCCESS && (
-        <SearchResult
-          {...searchResult}
-          onAlternateSearch={handleAlternateSearch}
+    <div
+      css={css`
+        & > div {
+          margin-bottom: 20px;
+        }
+      `}
+    >
+      <div>
+        <SearchForm
+          query={query}
+          queryType={queryType}
+          onQueryChange={handleQueryChange}
+          onQueryTypeSelect={handleQueryTypeSelect}
+          isSearchDisabled={isSearchDisabled}
+          onSearch={handleSearch}
         />
+      </div>
+      {searchStatus === ApiStatus.LOADING && <div>Searching...</div>}
+      {searchStatus === ApiStatus.ERROR && <div>{searchError}</div>}
+      {searchStatus === ApiStatus.SUCCESS && (
+        <div>
+          <SearchResult
+            {...searchResult}
+            onAlternateSearch={handleAlternateSearch}
+          />
+        </div>
       )}
-    </React.Fragment>
+    </div>
   );
 };
 

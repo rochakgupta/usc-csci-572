@@ -11,18 +11,24 @@ const SearchResult = ({
   alternate,
   onAlternateSearch
 }) => {
-  const Alternate = () => (
-    <i
-      css={css`
-        color: blue;
-        text-decoration: underline;
-        cursor: pointer;
-      `}
-      onClick={() => onAlternateSearch(alternate)}
-    >
-      {alternate}
-    </i>
-  );
+  const Alternate = () => {
+    const handleClick = () => {
+      onAlternateSearch(alternate);
+    };
+
+    return (
+      <i
+        css={css`
+          color: blue;
+          text-decoration: underline;
+          cursor: pointer;
+        `}
+        onClick={handleClick}
+      >
+        {alternate}
+      </i>
+    );
+  };
 
   const Document = ({ id, url, title, description }) => {
     const Link = ({ text }) => (
@@ -53,7 +59,7 @@ const SearchResult = ({
     <div
       css={css`
         & > div {
-          margin-top: 20px;
+          margin-bottom: 20px;
         }
       `}
     >
@@ -64,7 +70,7 @@ const SearchResult = ({
       )}
       {alternate && (
         <div>
-          Got no results for <i>{query}</i>. Did you mean <Alternate />?
+          Found 0 results for <i>{query}</i>. Did you mean <Alternate />?
         </div>
       )}
       {documents.map((document, index) => (
