@@ -2,13 +2,13 @@
 
 import { css } from "@emotion/react";
 import QuerySuggestInput from "./QuerySuggestInput";
-import QueryTypeRadioInput from "./QueryTypeRadioInput";
+import SearchTypeRadioInput from "./SearchTypeRadioInput";
 
 const SearchForm = ({
   query,
-  queryType,
+  searchType,
   onQueryChange,
-  onQueryTypeSelect,
+  onSearchTypeSelect,
   isSearchDisabled,
   onSearch
 }) => (
@@ -27,7 +27,7 @@ const SearchForm = ({
   >
     <div>Enhanced Search</div>
     <div>
-      <QuerySuggestInput width="200px" value={query} onChange={onQueryChange} />
+      <QuerySuggestInput width="300px" value={query} onChange={onQueryChange} />
     </div>
     <div
       css={css`
@@ -41,19 +41,19 @@ const SearchForm = ({
     >
       {[
         {
-          value: "lucene",
+          type: "lucene",
           label: "Lucene"
         },
         {
-          value: "pagerank",
+          type: "pagerank",
           label: "Page Rank"
         }
-      ].map((QueryType, index) => (
+      ].map((SearchType, index) => (
         <div key={index}>
-          <QueryTypeRadioInput
-            {...QueryType}
-            selectedValue={queryType}
-            onSelect={onQueryTypeSelect}
+          <SearchTypeRadioInput
+            {...SearchType}
+            selectedType={searchType}
+            onSelect={onSearchTypeSelect}
           />
         </div>
       ))}

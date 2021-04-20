@@ -8,7 +8,7 @@ import SearchResult from "./SearchResult";
 
 const initialState = {
   query: "",
-  queryType: null,
+  searchType: null,
   searchStatus: ApiStatus.INITIAL,
   searchResult: null,
   searchError: null
@@ -21,10 +21,10 @@ const reducer = (state, action) => {
         ...state,
         query: action.query
       };
-    case "QUERY_TYPE_SELECT":
+    case "SEARCH_TYPE_SELECT":
       return {
         ...state,
-        queryType: action.queryType
+        searchType: action.searchType
       };
     case "SEARCH_START":
       return {
@@ -52,7 +52,7 @@ const reducer = (state, action) => {
 
 const App = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { query, queryType, searchStatus, searchResult, searchError } = state;
+  const { query, searchType, searchStatus, searchResult, searchError } = state;
 
   const handleQueryChange = (query) => {
     dispatch({
@@ -61,10 +61,10 @@ const App = () => {
     });
   };
 
-  const handleQueryTypeSelect = (queryType) => {
+  const handleSearchTypeSelect = (searchType) => {
     dispatch({
-      type: "QUERY_TYPE_SELECT",
-      queryType
+      type: "SEARCH_TYPE_SELECT",
+      searchType
     });
   };
 
@@ -73,7 +73,7 @@ const App = () => {
       type: "SEARCH_START"
     });
     try {
-      const searchResult = await Api.search(q, queryType);
+      const searchResult = await Api.search(q, searchType);
       dispatch({
         type: "SEARCH_SUCCESS",
         searchResult
@@ -94,7 +94,10 @@ const App = () => {
     await search(alternate);
   };
 
-  const isSearchDisabled = !(query && query.length > 0 && queryType);
+  const isSearchFormValid = query && query.length > 0 && searchType;
+
+  const isSearchDisabled =
+    !isSearchFormValid || searchStatus === ApiStatus.LOADING;
 
   return (
     <div
@@ -107,9 +110,9 @@ const App = () => {
       <div>
         <SearchForm
           query={query}
-          queryType={queryType}
+          searchType={searchType}
           onQueryChange={handleQueryChange}
-          onQueryTypeSelect={handleQueryTypeSelect}
+          onSearchTypeSelect={handleSearchTypeSelect}
           isSearchDisabled={isSearchDisabled}
           onSearch={handleSearch}
         />

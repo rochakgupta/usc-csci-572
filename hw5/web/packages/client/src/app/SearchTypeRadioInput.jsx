@@ -1,4 +1,4 @@
-const QueryTypeRadioInput = ({ value, label, selectedValue, onSelect }) => {
+const SearchTypeRadioInput = ({ type, label, selectedType, onSelect }) => {
   const handleChange = (e) => {
     onSelect(e.target.value);
   };
@@ -9,8 +9,8 @@ const QueryTypeRadioInput = ({ value, label, selectedValue, onSelect }) => {
         type="radio"
         id="radio"
         name="radio"
-        value={value}
-        checked={selectedValue === value}
+        value={type}
+        checked={selectedType === type}
         onChange={handleChange}
       />
       <label htmlFor="radio">{label}</label>
@@ -18,4 +18,4 @@ const QueryTypeRadioInput = ({ value, label, selectedValue, onSelect }) => {
   );
 };
 
-export default QueryTypeRadioInput;
+export default SearchTypeRadioInput;

@@ -50,13 +50,9 @@ const buildSearchResult = async (query, data) => {
         })
     );
 
-    let alternate = null;
-
-    if (total === 0) {
-        const corrected = spelling.correct(query);
-        if (corrected !== query) {
-            alternate = corrected;
-        }
+    let alternate = spelling.correct(query);
+    if (alternate === query) {
+        alternate = null;
     }
 
     return {
@@ -78,9 +74,6 @@ const buildError = (error) => {
 };
 
 const search = async (query, type) => {
-    if (type !== "lucene" && type !== "pagerank") {
-        throw response.buildBadRequestError("Invalid query type");
-    }
     try {
         const response = await getInstance().get("/select", {
             params: {
@@ -117,7 +110,6 @@ const buildSuggestions = (query, data) => {
 };
 
 const suggest = async (query) => {
-    query = query.toLowerCase();
     try {
         const response = await getInstance().get("/suggest", {
             params: {

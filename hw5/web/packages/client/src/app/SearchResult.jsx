@@ -11,13 +11,15 @@ const SearchResult = ({
   alternate,
   onAlternateSearch
 }) => {
-  const Alternate = () => {
+  const Query = ({ query }) => <i>{query}</i>;
+
+  const AlternateQuery = () => {
     const handleClick = () => {
       onAlternateSearch(alternate);
     };
 
     return (
-      <i
+      <span
         css={css`
           color: blue;
           text-decoration: underline;
@@ -25,8 +27,8 @@ const SearchResult = ({
         `}
         onClick={handleClick}
       >
-        {alternate}
-      </i>
+        <Query query={alternate} />
+      </span>
     );
   };
 
@@ -57,23 +59,37 @@ const SearchResult = ({
         & > div {
           margin-bottom: 20px;
         }
-        & > div:not(:first-of-type) {
-          margin-left: 20px;
-        }
       `}
     >
-      {!alternate && (
-        <div>
-          Results {start} - {end} of {total}:
-        </div>
-      )}
       {alternate && (
         <div>
-          Found 0 results for <i>{query}</i>. Did you mean <Alternate />?
+          {total === 0 && (
+            <span
+              css={css`
+                margin-right: 5px;
+              `}
+            >
+              Did not find any results for <Query query={query} />.
+            </span>
+          )}
+          <span>
+            Did you mean <AlternateQuery />?
+          </span>
+        </div>
+      )}
+      {total > 0 && (
+        <div>
+          Showing results {start} - {end} of {total} for <Query query={query} />
+          :
         </div>
       )}
       {documents.map((document, index) => (
-        <div key={index}>
+        <div
+          key={index}
+          css={css`
+            margin-left: 20px;
+          `}
+        >
           <Document {...document} />
         </div>
       ))}
