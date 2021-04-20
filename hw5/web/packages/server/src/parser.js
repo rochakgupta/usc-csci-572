@@ -22,7 +22,7 @@ const parseQuery = (query) => {
 };
 
 const parseSearchType = (type) => {
-    if (!validator.isNonEmptyString(type) || (type !== "lucene" && type !== "pagerank")) {
+    if (type !== "lucene" && type !== "pagerank") {
         throw response.buildBadRequestError("Invalid search type");
     }
     return type;
