@@ -7,6 +7,12 @@
     "watch": "nodemon --watch src src/server.js",
     "start": "node src/server.js"
   },
+  "prettier": {
+    "singleQuote": false,
+    "tabWidth": 4,
+    "printWidth": 120,
+    "trailingComma": "none"
+  },
   "author": "Rochak Gupta <rochak84@gmail.com>",
   "license": "MIT",
   "dependencies": {

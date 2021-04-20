@@ -44,6 +44,11 @@
       ]
     }
   },
+  "prettier": {
+    "singleQuote": false,
+    "trailingComma": "none",
+    "tabWidth": 2
+  },
   "browserslist": {
     "production": [
       ">0.2%",
