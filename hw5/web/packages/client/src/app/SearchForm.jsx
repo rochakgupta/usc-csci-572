@@ -60,7 +60,7 @@ const SearchForm = ({
     </div>
     <div>
       <button onClick={onSearch} disabled={isSearchDisabled}>
-        Submit
+        Search
       </button>
     </div>
   </div>
