@@ -11,7 +11,15 @@ const SearchResult = ({
   alternate,
   onAlternateSearch
 }) => {
-  const Query = ({ query }) => <i>{query}</i>;
+  const Query = ({ query }) => (
+    <span
+      css={css`
+        font-style: italic;
+      `}
+    >
+      {query}
+    </span>
+  );
 
   const AlternateQuery = () => {
     const handleClick = () => {
@@ -69,7 +77,7 @@ const SearchResult = ({
                 margin-right: 5px;
               `}
             >
-              Did not find any results for <Query query={query} />.
+              Found 0 results for <Query query={query} />.
             </span>
           )}
           <span>
@@ -79,8 +87,7 @@ const SearchResult = ({
       )}
       {total > 0 && (
         <div>
-          Showing results {start} - {end} of {total} for <Query query={query} />
-          :
+          Results {start} - {end} of {total} for <Query query={query} />:
         </div>
       )}
       {documents.map((document, index) => (
