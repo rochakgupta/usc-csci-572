@@ -61,11 +61,7 @@ const reducer = (state, action) => {
   }
 };
 
-const QuerySuggestInput = ({
-  width,
-  value: inputValue,
-  onChange: onInputChange
-}) => {
+const QuerySuggestInput = ({ width, value: inputValue, onChange: onInputChange }) => {
   const [state, dispatch] = useReducer(reducer, buildInitialState(inputValue));
   const { value, suggestStatus, suggestError } = state;
 

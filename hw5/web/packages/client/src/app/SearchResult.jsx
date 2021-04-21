@@ -2,15 +2,7 @@
 
 import { css } from "@emotion/react";
 
-const SearchResult = ({
-  query,
-  start,
-  end,
-  total,
-  documents,
-  alternate,
-  onAlternateSearch
-}) => {
+const SearchResult = ({ query, start, end, total, documents, alternate, onAlternateSearch }) => {
   const Query = ({ query }) => (
     <span
       css={css`
@@ -87,7 +79,7 @@ const SearchResult = ({
       )}
       {total > 0 && (
         <div>
-          Results {start} - {end} of {total} for <Query query={query} />:
+          Showing results {start} - {end} of {total} for <Query query={query} />:
         </div>
       )}
       {documents.map((document, index) => (

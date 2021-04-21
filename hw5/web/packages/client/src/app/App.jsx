@@ -96,8 +96,7 @@ const App = () => {
 
   const isSearchFormValid = query && query.length > 0 && searchType;
 
-  const isSearchDisabled =
-    !isSearchFormValid || searchStatus === ApiStatus.LOADING;
+  const isSearchDisabled = !isSearchFormValid || searchStatus === ApiStatus.LOADING;
 
   return (
     <div
@@ -121,10 +120,7 @@ const App = () => {
       {searchStatus === ApiStatus.ERROR && <div>{searchError}</div>}
       {searchStatus === ApiStatus.SUCCESS && (
         <div>
-          <SearchResult
-            {...searchResult}
-            onAlternateSearch={handleAlternateSearch}
-          />
+          <SearchResult {...searchResult} onAlternateSearch={handleAlternateSearch} />
         </div>
       )}
     </div>

@@ -4,14 +4,7 @@ import { css } from "@emotion/react";
 import QuerySuggestInput from "./QuerySuggestInput";
 import SearchTypeRadioInput from "./SearchTypeRadioInput";
 
-const SearchForm = ({
-  query,
-  searchType,
-  onQueryChange,
-  onSearchTypeSelect,
-  isSearchDisabled,
-  onSearch
-}) => (
+const SearchForm = ({ query, searchType, onQueryChange, onSearchTypeSelect, isSearchDisabled, onSearch }) => (
   <div
     css={css`
       display: flex;
@@ -50,11 +43,7 @@ const SearchForm = ({
         }
       ].map((SearchType, index) => (
         <div key={index}>
-          <SearchTypeRadioInput
-            {...SearchType}
-            selectedType={searchType}
-            onSelect={onSearchTypeSelect}
-          />
+          <SearchTypeRadioInput {...SearchType} selectedType={searchType} onSelect={onSearchTypeSelect} />
         </div>
       ))}
     </div>

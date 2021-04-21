@@ -2,8 +2,6 @@ const validator = require("./validator");
 const mapping = require("./mapping");
 const response = require("./response");
 
-const defaultValue = "N/A";
-
 const parseValue = (value) => {
     if (validator.isNonEmptyString(value)) {
         return value;
@@ -11,14 +9,14 @@ const parseValue = (value) => {
     if (validator.isNonEmptyStringArray(value)) {
         return value[0];
     }
-    return defaultValue;
+    return "N/A";
 };
 
 const parseQuery = (query) => {
     if (!validator.isNonEmptyString(query)) {
         throw response.buildBadRequestError("Invalid query");
     }
-    return query.toLowerCase();
+    return query.trim().toLowerCase();
 };
 
 const parseSearchType = (type) => {
